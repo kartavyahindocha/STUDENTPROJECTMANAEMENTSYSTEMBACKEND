@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Data;
@@ -7,22 +7,22 @@ namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class StatusController : ControllerBase
+    public class UserTypeController : ControllerBase
     {
         private readonly AppDbContext context;
         #region DI
-        public StatusController(AppDbContext context)
+        public UserTypeController(AppDbContext context)
         {
             this.context = context;
         }
         #endregion
 
-        #region GETALLSTATUS
-        [HttpGet("/status/list")]
-        public async Task<IActionResult> GetAllStatus()
+        #region GetAllUserType
+        [HttpGet("/usertype/list")]
+        public async Task<IActionResult> GetAllUserType()
         {
-            var status=await context.TaskStatus.ToListAsync();
-            return Ok(status);
+            var userType = await context.UserTypes.ToListAsync();
+            return Ok(userType);
         }
         #endregion
     }

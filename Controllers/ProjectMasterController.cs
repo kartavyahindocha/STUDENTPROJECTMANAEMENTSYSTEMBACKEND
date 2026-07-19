@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Data;
@@ -7,22 +7,22 @@ namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class StatusController : ControllerBase
+    public class ProjectMasterController : ControllerBase
     {
         private readonly AppDbContext context;
         #region DI
-        public StatusController(AppDbContext context)
+        public ProjectMasterController(AppDbContext context)
         {
             this.context = context;
         }
         #endregion
 
-        #region GETALLSTATUS
-        [HttpGet("/status/list")]
-        public async Task<IActionResult> GetAllStatus()
+        #region GetAllProjectMaster
+        [HttpGet("/projectmaster/list")]
+        public async Task<IActionResult> GetAllProjectMaster()
         {
-            var status=await context.TaskStatus.ToListAsync();
-            return Ok(status);
+            var projectMaster = await context.ProjectMasters.ToListAsync();
+            return Ok(projectMaster);
         }
         #endregion
     }

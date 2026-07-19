@@ -5,24 +5,24 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Models
 {
-    [Table("SPM_Role")]
-    public class Role : BaseModel
+    [Table("SPM_UserType")]
+    public class UserType : BaseModel
     {
         [Key]
-        public int RoleID { get; set; }
+        public int UserTypeID { get; set; }
 
+        // e.g. "Admin", "Student", "Faculty"
         [Required]
         [StringLength(50)]
-        public string RoleName { get; set; }
+        public string UserTypeName { get; set; }
 
         [StringLength(250)]
         public string? Description { get; set; }
 
         // ---- Relationships ----
 
-        // One Role -> Many UserRole (1:N). Combined with User.UserRoles, this
-        // is how the User <-> Role many-to-many is modeled — through the
-        // explicit SPM_UserRole join entity.
-        public ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
+        // One UserType -> Many User (1:N). Every user (Admin/Student/Faculty)
+        // is classified through this lookup table.
+        public ICollection<User> Users { get; set; } = new List<User>();
     }
 }

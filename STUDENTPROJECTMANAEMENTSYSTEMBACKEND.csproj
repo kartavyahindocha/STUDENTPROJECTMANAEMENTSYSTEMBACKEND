@@ -18,4 +18,11 @@
     <PackageReference Include="Scalar.AspNetCore" Version="2.16.11" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="STUDENTPROJECTMANAEMENTSYSTEMBACKEND\**;Models\Project.cs;Models\Priority.cs" />
+    <Content Remove="STUDENTPROJECTMANAEMENTSYSTEMBACKEND\**" />
+    <EmbeddedResource Remove="STUDENTPROJECTMANAEMENTSYSTEMBACKEND\**" />
+    <None Remove="STUDENTPROJECTMANAEMENTSYSTEMBACKEND\**" />
+  </ItemGroup>
+
 </Project>

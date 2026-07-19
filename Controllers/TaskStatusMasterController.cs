@@ -7,22 +7,22 @@ namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class StatusController : ControllerBase
+    public class TaskStatusMasterController : ControllerBase
     {
         private readonly AppDbContext context;
         #region DI
-        public StatusController(AppDbContext context)
+        public TaskStatusMasterController(AppDbContext context)
         {
             this.context = context;
         }
         #endregion
 
-        #region GETALLSTATUS
-        [HttpGet("/status/list")]
-        public async Task<IActionResult> GetAllStatus()
+        #region GetAllTaskStatusMaster
+        [HttpGet("/taskstatusmaster/list")]
+        public async Task<IActionResult> GetAllTaskStatusMaster()
         {
-            var status=await context.TaskStatus.ToListAsync();
-            return Ok(status);
+            var taskStatusMaster = await context.TaskStatus.ToListAsync();
+            return Ok(taskStatusMaster);
         }
         #endregion
     }

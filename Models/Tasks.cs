@@ -2,13 +2,16 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace STUDENTPROJECTMANAGEMENTSYSTEM.Models
+namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Models
 {
+    // NOTE: named "Tasks" instead of "Task" — the plain name collides with
+    // System.Threading.Tasks.Task, a real BCL type in scope via
+    // ImplicitUsings. Table name still maps to SPM_Task.
     [Table("SPM_Task")]
     public class Tasks : BaseModel
     {
         [Key]
-        public int TaskId { get; set; }
+        public int TaskID { get; set; }
 
         [Required]
         [StringLength(200)]
@@ -27,11 +30,16 @@ namespace STUDENTPROJECTMANAGEMENTSYSTEM.Models
         [Column(TypeName = "decimal(5,2)")]
         public decimal ProgressPercentage { get; set; }
 
-        public DateTime? StartDate { get; set; }
+        [Required]
+        public DateTime TaskAssignedDate { get; set; }
 
-        public DateTime? DueDate { get; set; }
+        public DateTime? TaskStartDate { get; set; }
 
-        public DateTime? CompletedDate { get; set; }
+        public DateTime? TaskDueDate { get; set; }
+
+        public DateTime? TaskCompletedDate { get; set; }
+
+        public DateTime? NextFollowUpDate { get; set; }
 
         [StringLength(500)]
         public string? FacultyRemarks { get; set; }
@@ -39,26 +47,26 @@ namespace STUDENTPROJECTMANAGEMENTSYSTEM.Models
         [StringLength(500)]
         public string? StudentRemarks { get; set; }
 
-        public bool? IsDeleted { get; set; }
-
         // ---- Foreign Keys ----
-
-        // NOTE: the PDF documents this column as "FK -> Allocation", but no
-        // SPM_Allocation table appears anywhere in the provided schema pages —
-        // only SPM_Role, SPM_User, SPM_UserRole, SPM_Status, SPM_Priority,
-        // SPM_Project, and SPM_Task were given. Left as a plain required int
-        // with no navigation property since the target table isn't defined.
-        [Required]
-        public int AllocationID { get; set; }
+        // [ForeignKey("<IdColumnName>")] is placed on the navigation property
+        // and points at the actual FK id column declared just above it.
 
         [Required]
-        [ForeignKey(nameof(Status))]
-        public int TaskStatus { get; set; }
-        public Status? Status { get; set; }
+        public int ProjectAllocationID { get; set; }
+
+        [ForeignKey("ProjectAllocationID")]
+        public ProjectAllocation? ProjectAllocation { get; set; }
 
         [Required]
-        [ForeignKey(nameof(Priority))]
-        public int PriorityID { get; set; }
-        public Priority? Priority { get; set; }
+        public int TaskStatusID { get; set; }
+
+        [ForeignKey("TaskStatusID")]
+        public TaskStatusMaster? TaskStatus { get; set; }
+
+        [Required]
+        public int TaskPriorityID { get; set; }
+
+        [ForeignKey("TaskPriorityID")]
+        public TaskPriorityMaster? TaskPriority { get; set; }
     }
 }

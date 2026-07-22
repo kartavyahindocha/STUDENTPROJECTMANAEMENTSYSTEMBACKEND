@@ -11,9 +11,6 @@ namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Models
         [Key]
         public int ProjectAllocationID { get; set; }
 
-        // Not Null, Default GETDATE() — the DB-side default is configured in
-        // AppDbContext via HasDefaultValueSql("GETDATE()"), since that has no
-        // direct data-annotation equivalent.
         [Required]
         public DateTime AssignedDate { get; set; }
 
@@ -33,13 +30,9 @@ namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Models
         [Column(TypeName = "decimal(5,2)")]
         public decimal ProgressPercentage { get; set; }
 
-        // Allow Null -> 'A', 'B', 'C' entered at the end of semester.
         [StringLength(1)]
         public string? OverAllGrade { get; set; }
 
-        // ---- Foreign Keys ----
-        // [ForeignKey("<IdColumnName>")] is placed on the navigation property
-        // and points at the actual FK id column declared just above it.
 
         [Required]
         public int ProjectID { get; set; }
@@ -59,9 +52,6 @@ namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Models
         [ForeignKey("FacultyID")]
         public User? Faculty { get; set; }
 
-        // ---- Relationships ----
-
-        // One ProjectAllocation -> Many Task (1:N).
         public ICollection<Tasks> Tasks { get; set; } = new List<Tasks>();
     }
 }

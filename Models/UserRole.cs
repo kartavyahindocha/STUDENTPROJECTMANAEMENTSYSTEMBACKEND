@@ -10,10 +10,6 @@ namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Models
         [Key]
         public int RolePermissionID { get; set; }
 
-        // ---- Foreign Keys ----
-        // [ForeignKey("<IdColumnName>")] is placed on the navigation property
-        // and points at the actual FK id column declared just above it.
-
         [Required]
         public int RoleID { get; set; }
 

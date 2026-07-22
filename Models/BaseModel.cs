@@ -2,7 +2,6 @@
 
 namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Models
 {
-    // Common audit columns applied to every SPM_ table.
     public abstract class BaseModel
     {
         [Required]

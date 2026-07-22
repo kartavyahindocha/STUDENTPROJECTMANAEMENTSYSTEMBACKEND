@@ -21,7 +21,7 @@ namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Controllers
         [HttpGet("/status/list")]
         public async Task<IActionResult> GetAllStatus()
         {
-            var status=await context.TaskStatus.ToListAsync();
+            var status=await context.TaskStatus.AsNoTracking().ToListAsync();
             return Ok(status);
         }
         #endregion

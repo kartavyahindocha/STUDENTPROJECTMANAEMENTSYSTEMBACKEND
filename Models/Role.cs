@@ -18,11 +18,13 @@ namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Models
         [StringLength(250)]
         public string? Description { get; set; }
 
-        // ---- Relationships ----
-
-        // One Role -> Many UserRole (1:N). Combined with User.UserRoles, this
-        // is how the User <-> Role many-to-many is modeled — through the
-        // explicit SPM_UserRole join entity.
         public ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
     }
+    public class RoleDTO
+    {
+        public int RoleID { get; set; }
+        public string RoleName { get; set; }
+        public string? Description { get; set; }
+    }   
+
 }

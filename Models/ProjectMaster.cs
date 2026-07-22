@@ -17,10 +17,12 @@ namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Models
 
         public string? Description { get; set; }
 
-        // ---- Relationships ----
-
-        // One ProjectMaster -> Many ProjectAllocation (1:N). A single project
-        // definition can be allocated to multiple student/faculty pairs.
         public ICollection<ProjectAllocation> ProjectAllocations { get; set; } = new List<ProjectAllocation>();
+    }
+    public class  ProjectMasterDTO
+    {
+        public int ProjectID { get; set; }
+        public string ProjectTitle { get; set; }
+        public string? Description { get; set; }
     }
 }

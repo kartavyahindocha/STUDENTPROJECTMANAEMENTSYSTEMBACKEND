@@ -50,19 +50,12 @@ namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Models
         [ForeignKey("UserTypeID")]
         public UserType? UserType { get; set; }
 
-        // ---- Relationships ----
 
-        // One User -> Many UserRole (1:N). Paired with Role.UserRoles, this is
-        // the N:N between User and Role via the SPM_UserRole join entity.
         public ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
 
-        // One User -> Many ProjectAllocation, as the assigned Student (1:N).
-        // Split into two collections (rather than one) because a User can
-        // appear on the same ProjectAllocation row twice — once as Student,
-        // once as Faculty — so each FK needs its own named inverse.
         public ICollection<ProjectAllocation> ProjectAllocationsAsStudent { get; set; } = new List<ProjectAllocation>();
 
-        // One User -> Many ProjectAllocation, as the supervising Faculty (1:N).
+        
         public ICollection<ProjectAllocation> ProjectAllocationsAsFaculty { get; set; } = new List<ProjectAllocation>();
     }
 }

@@ -4,9 +4,6 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Models
 {
-    // NOTE: named "Tasks" instead of "Task" — the plain name collides with
-    // System.Threading.Tasks.Task, a real BCL type in scope via
-    // ImplicitUsings. Table name still maps to SPM_Task.
     [Table("SPM_Task")]
     public class Tasks : BaseModel
     {
@@ -47,9 +44,6 @@ namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Models
         [StringLength(500)]
         public string? StudentRemarks { get; set; }
 
-        // ---- Foreign Keys ----
-        // [ForeignKey("<IdColumnName>")] is placed on the navigation property
-        // and points at the actual FK id column declared just above it.
 
         [Required]
         public int ProjectAllocationID { get; set; }

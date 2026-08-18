@@ -1,4 +1,3 @@
-﻿using STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Models;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -13,13 +12,13 @@ namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Models
 
         [Required]
         [StringLength(20)]
-        public string TaskPriorityName { get; set; }
+        public string TaskPriorityName { get; set; } = string.Empty;
 
         [Required]
         [StringLength(20)]
-        public string TaskPriortyCssClass { get; set; }
-
+        public string TaskPriortyCssClass { get; set; } = string.Empty;
 
         public ICollection<Tasks> Tasks { get; set; } = new List<Tasks>();
     }
+
 }

@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
+using FluentValidation;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Data;
+using STUDENTPROJECTMANAEMENTSYSTEMBACKEND.DTOs.Role;
 using STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Models;
 
 namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Controllers
@@ -11,10 +13,13 @@ namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Controllers
     public class RoleController : ControllerBase
     {
         private readonly AppDbContext context;
+        private readonly IValidator<RoleCreateEditDto> validator;
+
         #region DI
-        public RoleController(AppDbContext context)
+        public RoleController(AppDbContext context, IValidator<RoleCreateEditDto> validator)
         {
             this.context = context;
+            this.validator = validator;
         }
         #endregion
 
@@ -22,57 +27,124 @@ namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Controllers
         [HttpGet("/role/list")]
         public async Task<IActionResult> GetAllRole()
         {
-            var role = await context.Roles.AsNoTracking().ToListAsync();
-            return Ok(role);
+            var roles = await context.Roles.AsNoTracking().ToListAsync();
+
+            var dtoList = roles.Select(r => new RoleGetDto
+            {
+                RoleID      = r.RoleID,
+                RoleName    = r.RoleName,
+                Description = r.Description
+            }).ToList();
+
+            var response = ApiResponse.FromResponse(dtoList, "Role list fetched successfully", "No roles found");
+            return StatusCode(response.StatusCode, response);
         }
         #endregion
 
         #region CreateRole
         [HttpPost("/role/create")]
-        public async Task<IActionResult> CreateRole([FromBody] RoleDTO roles)
+        public async Task<IActionResult> CreateRole([FromBody] RoleCreateEditDto roles)
         {
-            if(roles==null)
+            if (roles == null)
             {
-                return BadRequest("INVALID DATA");
+                var badRequestResponse = ApiResponse.BadRequest("INVALID DATA");
+                return StatusCode(badRequestResponse.StatusCode, badRequestResponse);
             }
-            var rolestoAdd = new Role();
-            rolestoAdd.RoleName = roles.RoleName;
-            rolestoAdd.Description = roles.Description;
 
-            var user = context.Roles.AddAsync(rolestoAdd);
+            var validationResult = await validator.ValidateAsync(roles);
+            if (!validationResult.IsValid)
+            {
+                var badRequestResponse = ApiResponse.BadRequest("Validation Failed", validationResult.Errors.Select(e => e.ErrorMessage));
+                return StatusCode(badRequestResponse.StatusCode, badRequestResponse);
+            }
+
+            var rolestoAdd = new Role
+            {
+                RoleName    = roles.RoleName,
+                Description = roles.Description
+            };
+
+            await context.Roles.AddAsync(rolestoAdd);
             await context.SaveChangesAsync();
 
-            return Ok(rolestoAdd);
+            var response = ApiResponse.Created(rolestoAdd, "Role created successfully");
+            return StatusCode(response.StatusCode, response);
         }
         #endregion
 
-        #region GetById
+        #region GetRoleById
         [HttpGet("/role/getbyid/{id}")]
         public async Task<IActionResult> GetRoleById(int id)
         {
-            var roleid = await context.Roles.FindAsync(id);
-            if (roleid == null)
+            var role = await context.Roles.FindAsync(id);
+            if (role == null)
             {
-                return NotFound("Role Not Found");
+                var notFound = ApiResponse.NotFound("Role Not Found");
+                return StatusCode(notFound.StatusCode, notFound);
             }
-            return Ok(roleid);
+
+            var dto = new RoleGetDto
+            {
+                RoleID      = role.RoleID,
+                RoleName    = role.RoleName,
+                Description = role.Description
+            };
+
+            var response = ApiResponse.Success(dto, "Role fetched successfully");
+            return StatusCode(response.StatusCode, response);
         }
         #endregion
 
-        #region DeleteRole
-        [HttpDelete("/role/delete/{id}")]
-        public async Task<IActionResult>DeleteRoleByPK(int id)
+        #region UpdateRole
+        [HttpPut("/role/update/{id}")]
+        public async Task<IActionResult> UpdateRole(int id, [FromBody] RoleCreateEditDto roles)
         {
-            var roleid=await context.Roles.FindAsync(id);
-
-            if(roleid== null)
+            if (roles == null)
             {
-                return NotFound("Role Not Found");
+                var badRequestResponse = ApiResponse.BadRequest("INVALID DATA");
+                return StatusCode(badRequestResponse.StatusCode, badRequestResponse);
             }
 
-            var roleDelete=context.Roles.Remove(roleid);
+            var validationResult = await validator.ValidateAsync(roles);
+            if (!validationResult.IsValid)
+            {
+                var badRequestResponse = ApiResponse.BadRequest("Validation Failed", validationResult.Errors.Select(e => e.ErrorMessage));
+                return StatusCode(badRequestResponse.StatusCode, badRequestResponse);
+            }
+
+            var existingRole = await context.Roles.FindAsync(id);
+            if (existingRole == null)
+            {
+                var notFoundResponse = ApiResponse.NotFound("Role Not Found");
+                return StatusCode(notFoundResponse.StatusCode, notFoundResponse);
+            }
+
+            existingRole.RoleName    = roles.RoleName;
+            existingRole.Description = roles.Description;
+
             await context.SaveChangesAsync();
-            return Ok(roleDelete);
+
+            var response = ApiResponse.Success(existingRole, "Role updated successfully");
+            return StatusCode(response.StatusCode, response);
+        }
+        #endregion
+
+        #region DeleteRoleByPK
+        [HttpDelete("/role/delete/{id}")]
+        public async Task<IActionResult> DeleteRoleByPK(int id)
+        {
+            var role = await context.Roles.FindAsync(id);
+            if (role == null)
+            {
+                var notFoundResponse = ApiResponse.NotFound("Role Not Found");
+                return StatusCode(notFoundResponse.StatusCode, notFoundResponse);
+            }
+
+            context.Roles.Remove(role);
+            await context.SaveChangesAsync();
+
+            var response = ApiResponse.Success(role, "Role deleted successfully");
+            return StatusCode(response.StatusCode, response);
         }
         #endregion
     }

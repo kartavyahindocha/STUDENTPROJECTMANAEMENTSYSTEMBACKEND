@@ -1,4 +1,4 @@
-﻿using STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Models;
+using STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Models;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -22,4 +22,5 @@ namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Models
         [ForeignKey("UserID")]
         public User? User { get; set; }
     }
+
 }

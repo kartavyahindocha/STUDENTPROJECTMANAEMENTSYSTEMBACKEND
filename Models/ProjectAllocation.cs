@@ -1,4 +1,4 @@
-﻿using STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Models;
+using STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Models;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;

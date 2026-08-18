@@ -1,11 +1,9 @@
-﻿using STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Models;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Models
 {
-    
     [Table("SPM_TaskStatus")]
     public class TaskStatusMaster : BaseModel
     {
@@ -14,20 +12,13 @@ namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Models
 
         [Required]
         [StringLength(20)]
-        public string TaskStatusName { get; set; }
+        public string TaskStatusName { get; set; } = string.Empty;
 
         [Required]
         [StringLength(100)]
-        public string TaskStatusCssClass { get; set; }
-
+        public string TaskStatusCssClass { get; set; } = string.Empty;
 
         public ICollection<Tasks> Tasks { get; set; } = new List<Tasks>();
     }
-    public class TaskStatusMasterDTO
-    {
-        public int TaskStatusID { get; set; }
-        public string TaskStatusName { get; set; }
-        public string TaskStatusCssClass{get; set;}
-        
-    }
+
 }

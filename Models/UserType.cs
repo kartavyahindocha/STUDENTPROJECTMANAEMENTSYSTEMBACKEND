@@ -1,4 +1,3 @@
-﻿using STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Models;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -11,20 +10,14 @@ namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Models
         [Key]
         public int UserTypeID { get; set; }
 
-        
         [Required]
         [StringLength(50)]
-        public string UserTypeName { get; set; }
+        public string UserTypeName { get; set; } = string.Empty;
 
         [StringLength(250)]
         public string? Description { get; set; }
+
         public ICollection<User> Users { get; set; } = new List<User>();
     }
 
-    public class UserTypeDto
-    {
-        public int UserTypeID { get; set; }
-        public string UserTypeName { get; set; }
-        public string? Description { get; set; }
-    }
 }

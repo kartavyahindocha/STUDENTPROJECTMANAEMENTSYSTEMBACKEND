@@ -1,4 +1,4 @@
-﻿using STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Models;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -12,7 +12,7 @@ namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Models
 
         [Required]
         [StringLength(200)]
-        public string TaskTitle { get; set; }
+        public string TaskTitle { get; set; } = string.Empty;
 
         public string? TaskDescription { get; set; }
 
@@ -44,7 +44,6 @@ namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Models
         [StringLength(500)]
         public string? StudentRemarks { get; set; }
 
-
         [Required]
         public int ProjectAllocationID { get; set; }
 
@@ -63,4 +62,5 @@ namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Models
         [ForeignKey("TaskPriorityID")]
         public TaskPriorityMaster? TaskPriority { get; set; }
     }
+
 }

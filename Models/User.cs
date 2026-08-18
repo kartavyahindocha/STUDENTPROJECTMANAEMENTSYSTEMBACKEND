@@ -1,4 +1,3 @@
-﻿using STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Models;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -13,36 +12,32 @@ namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Models
 
         [Required]
         [StringLength(150)]
-        public string FullName { get; set; }
+        public string FullName { get; set; } = string.Empty;
 
-        // EnrollmentNo, Faculty Code, etc. — optional, format depends on UserType.
         [StringLength(100)]
         public string? UserCode { get; set; }
 
-        // Not Null, Unique — uniqueness enforced via HasIndex(...).IsUnique() in AppDbContext.
         [Required]
         [StringLength(150)]
         [EmailAddress]
-        public string Email { get; set; }
+        public string Email { get; set; } = string.Empty;
 
         [Required]
-        public string Password { get; set; }
+        public string Password { get; set; } = string.Empty;
 
         [Required]
         [StringLength(15)]
         [Phone]
-        public string MobileNumber { get; set; }
+        public string MobileNumber { get; set; } = string.Empty;
 
         [Required]
         [StringLength(500)]
-        public string ProfilePicturePath { get; set; }
+        public string ProfilePicturePath { get; set; } = "/images/default-user.png";
 
         [Required]
-        public bool IsActive { get; set; }
+        public bool IsActive { get; set; } = true;
 
-        public bool? IsDeleted { get; set; }
-
-        // ---- Foreign Keys ----
+        public bool? IsDeleted { get; set; } = false;
 
         [Required]
         public int UserTypeID { get; set; }
@@ -50,12 +45,9 @@ namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Models
         [ForeignKey("UserTypeID")]
         public UserType? UserType { get; set; }
 
-
         public ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
-
         public ICollection<ProjectAllocation> ProjectAllocationsAsStudent { get; set; } = new List<ProjectAllocation>();
-
-        
         public ICollection<ProjectAllocation> ProjectAllocationsAsFaculty { get; set; } = new List<ProjectAllocation>();
     }
+
 }

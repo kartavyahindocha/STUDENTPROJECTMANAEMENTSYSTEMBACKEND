@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
+using FluentValidation;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Data;
+using STUDENTPROJECTMANAEMENTSYSTEMBACKEND.DTOs.UserType;
 using STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Models;
 
 namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Controllers
@@ -11,10 +13,13 @@ namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Controllers
     public class UserTypeController : ControllerBase
     {
         private readonly AppDbContext context;
+        private readonly IValidator<UserTypeCreateEditDto> validator;
+
         #region DI
-        public UserTypeController(AppDbContext context)
+        public UserTypeController(AppDbContext context, IValidator<UserTypeCreateEditDto> validator)
         {
             this.context = context;
+            this.validator = validator;
         }
         #endregion
 
@@ -22,59 +27,124 @@ namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Controllers
         [HttpGet("/usertype/list")]
         public async Task<IActionResult> GetAllUserType()
         {
-            var userType = await context.UserTypes.AsNoTracking().ToListAsync();
-            return Ok(userType);
+            var userTypes = await context.UserTypes.AsNoTracking().ToListAsync();
+
+            var dtoList = userTypes.Select(ut => new UserTypeGetDto
+            {
+                UserTypeID   = ut.UserTypeID,
+                UserTypeName = ut.UserTypeName,
+                Description  = ut.Description
+            }).ToList();
+
+            var response = ApiResponse.FromResponse(dtoList, "UserType list fetched successfully", "No UserTypes found");
+            return StatusCode(response.StatusCode, response);
         }
         #endregion
 
         #region CreateUserType
         [HttpPost("/usertype/create")]
-        public async Task<IActionResult> CreateUserType([FromBody]UserTypeDto userType)
+        public async Task<IActionResult> CreateUserType([FromBody] UserTypeCreateEditDto userType)
         {
-            if(userType==null)
+            if (userType == null)
             {
-                return BadRequest("UserType data is empty");
+                var badRequestResponse = ApiResponse.BadRequest("UserType data is empty");
+                return StatusCode(badRequestResponse.StatusCode, badRequestResponse);
             }
-            var user = new UserType();
-            user.UserTypeName = userType.UserTypeName;
-            user.Description = userType.Description;
 
-            var createuser = context.Add(user);
+            var validationResult = await validator.ValidateAsync(userType);
+            if (!validationResult.IsValid)
+            {
+                var badRequestResponse = ApiResponse.BadRequest("Validation Failed", validationResult.Errors.Select(e => e.ErrorMessage));
+                return StatusCode(badRequestResponse.StatusCode, badRequestResponse);
+            }
+
+            var userTypeToAdd = new UserType
+            {
+                UserTypeName = userType.UserTypeName,
+                Description  = userType.Description
+            };
+
+            await context.UserTypes.AddAsync(userTypeToAdd);
             await context.SaveChangesAsync();
 
-            return Ok(createuser);
+            var response = ApiResponse.Created(userTypeToAdd, "UserType created successfully");
+            return StatusCode(response.StatusCode, response);
         }
         #endregion
 
-        #region GetById
-
+        #region GetUserTypeById
         [HttpGet("/usertype/getbyid/{id}")]
-        public async Task<IActionResult> GetById(int id)
+        public async Task<IActionResult> GetUserTypeById(int id)
         {
-            if(id==null)
+            var userType = await context.UserTypes.FindAsync(id);
+            if (userType == null)
             {
-                return BadRequest("Id Not Found"); 
+                var notFound = ApiResponse.NotFound("UserType Not Found");
+                return StatusCode(notFound.StatusCode, notFound);
             }
-            var usertype=await context.UserTypes.FindAsync(id);
-            return Ok(usertype);
+
+            var dto = new UserTypeGetDto
+            {
+                UserTypeID   = userType.UserTypeID,
+                UserTypeName = userType.UserTypeName,
+                Description  = userType.Description
+            };
+
+            var response = ApiResponse.Success(dto, "UserType fetched successfully");
+            return StatusCode(response.StatusCode, response);
         }
         #endregion
 
-        #region DeleteUserType
-        [HttpDelete("/usertype/delete/{id}")]
-        public async Task<IActionResult> DeleteUserType(int id)
+        #region UpdateUserType
+        [HttpPut("/usertype/update/{id}")]
+        public async Task<IActionResult> UpdateUserType(int id, [FromBody] UserTypeCreateEditDto userType)
         {
-            if(id== null)
+            if (userType == null)
             {
-                return BadRequest("Id Not Found");
+                var badRequestResponse = ApiResponse.BadRequest("UserType data is empty");
+                return StatusCode(badRequestResponse.StatusCode, badRequestResponse);
             }
-            var userTypeId = await context.UserTypes.FindAsync(id);
-            if(userTypeId == null)
+
+            var validationResult = await validator.ValidateAsync(userType);
+            if (!validationResult.IsValid)
             {
-                return NotFound("UserType Not Found");
+                var badRequestResponse = ApiResponse.BadRequest("Validation Failed", validationResult.Errors.Select(e => e.ErrorMessage));
+                return StatusCode(badRequestResponse.StatusCode, badRequestResponse);
             }
-            var deleteUserType = context.UserTypes.Remove(userTypeId);
-            return Ok(deleteUserType);
+
+            var existingUserType = await context.UserTypes.FindAsync(id);
+            if (existingUserType == null)
+            {
+                var notFoundResponse = ApiResponse.NotFound("UserType Not Found");
+                return StatusCode(notFoundResponse.StatusCode, notFoundResponse);
+            }
+
+            existingUserType.UserTypeName = userType.UserTypeName;
+            existingUserType.Description  = userType.Description;
+
+            await context.SaveChangesAsync();
+
+            var response = ApiResponse.Success(existingUserType, "UserType updated successfully");
+            return StatusCode(response.StatusCode, response);
+        }
+        #endregion
+
+        #region DeleteUserTypeByPK
+        [HttpDelete("/usertype/delete/{id}")]
+        public async Task<IActionResult> DeleteUserTypeByPK(int id)
+        {
+            var userType = await context.UserTypes.FindAsync(id);
+            if (userType == null)
+            {
+                var notFoundResponse = ApiResponse.NotFound("UserType Not Found");
+                return StatusCode(notFoundResponse.StatusCode, notFoundResponse);
+            }
+
+            context.UserTypes.Remove(userType);
+            await context.SaveChangesAsync();
+
+            var response = ApiResponse.Success(userType, "UserType deleted successfully");
+            return StatusCode(response.StatusCode, response);
         }
         #endregion
     }

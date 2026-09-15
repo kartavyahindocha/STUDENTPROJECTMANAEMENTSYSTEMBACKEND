@@ -1,4 +1,4 @@
-namespace STUDENTPROJECTMANAGEMENTSYSTEM.Models
+namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Models
 {
     public class ErrorViewModel
     {

@@ -1,8 +1,9 @@
 ﻿using STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Models;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace STUDENTPROJECTMANAGEMENTSYSTEM.Models
+namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Models
 {
     [Table("SPM_Priority")]
     public class Priority : BaseModel
@@ -19,5 +20,10 @@ namespace STUDENTPROJECTMANAGEMENTSYSTEM.Models
         [Required]
         [StringLength(20)]
         public string PriorityCssClass { get; set; }
+
+        // ---- Relationships ----
+
+        // One Priority -> Many Tasks (1:N).
+        public ICollection<Tasks> Tasks { get; set; } = new List<Tasks>();
     }
 }

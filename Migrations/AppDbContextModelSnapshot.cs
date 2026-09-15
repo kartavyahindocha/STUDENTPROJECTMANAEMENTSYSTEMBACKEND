@@ -22,13 +22,18 @@ namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("STUDENTPROJECTMANAGEMENTSYSTEM.Models.Priority", b =>
+            modelBuilder.Entity("STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Models.ProjectAllocation", b =>
                 {
-                    b.Property<int>("PriorityID")
+                    b.Property<int>("ProjectAllocationID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PriorityID"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ProjectAllocationID"));
+
+                    b.Property<DateTime>("AssignedDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GETDATE()");
 
                     b.Property<int>("CreatedBy")
                         .HasColumnType("int");
@@ -36,15 +41,33 @@ namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("PriorityCssClass")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                    b.Property<int>("FacultyID")
+                        .HasColumnType("int");
 
-                    b.Property<string>("PriorityName")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
+                    b.Property<string>("OverAllGrade")
+                        .HasMaxLength(1)
+                        .HasColumnType("nvarchar(1)");
+
+                    b.Property<decimal>("ProgressPercentage")
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<DateTime>("ProjectEndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ProjectID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("ProjectStartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("StudentID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TotalCompletedTasks")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TotalTasksGiven")
+                        .HasColumnType("int");
 
                     b.Property<int?>("UpdatedBy")
                         .HasColumnType("int");
@@ -52,61 +75,186 @@ namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Migrations
                     b.Property<DateTime?>("UpdatedOn")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("PriorityID");
+                    b.HasKey("ProjectAllocationID");
 
-                    b.HasIndex("PriorityName")
-                        .IsUnique();
+                    b.HasIndex("FacultyID");
 
-                    b.ToTable("SPM_Priority");
+                    b.HasIndex("ProjectID");
+
+                    b.HasIndex("StudentID");
+
+                    b.ToTable("SPM_ProjectAllocation");
 
                     b.HasData(
                         new
                         {
-                            PriorityID = 1,
-                            CreatedBy = 1,
+                            ProjectAllocationID = 1,
+                            AssignedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedBy = 0,
                             CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            PriorityCssClass = "tone-neutral",
-                            PriorityName = "Low"
+                            FacultyID = 2,
+                            OverAllGrade = "B",
+                            ProgressPercentage = 40.00m,
+                            ProjectEndDate = new DateTime(2026, 4, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ProjectID = 1,
+                            ProjectStartDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            StudentID = 6,
+                            TotalCompletedTasks = 2,
+                            TotalTasksGiven = 5
                         },
                         new
                         {
-                            PriorityID = 2,
-                            CreatedBy = 1,
+                            ProjectAllocationID = 2,
+                            AssignedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedBy = 0,
                             CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            PriorityCssClass = "tone-warning",
-                            PriorityName = "Medium"
+                            FacultyID = 3,
+                            OverAllGrade = "A",
+                            ProgressPercentage = 80.00m,
+                            ProjectEndDate = new DateTime(2026, 4, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ProjectID = 2,
+                            ProjectStartDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            StudentID = 7,
+                            TotalCompletedTasks = 4,
+                            TotalTasksGiven = 5
                         },
                         new
                         {
-                            PriorityID = 3,
-                            CreatedBy = 1,
+                            ProjectAllocationID = 3,
+                            AssignedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedBy = 0,
                             CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            PriorityCssClass = "tone-danger",
-                            PriorityName = "High"
+                            FacultyID = 4,
+                            OverAllGrade = "C",
+                            ProgressPercentage = 20.00m,
+                            ProjectEndDate = new DateTime(2026, 4, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ProjectID = 3,
+                            ProjectStartDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            StudentID = 8,
+                            TotalCompletedTasks = 1,
+                            TotalTasksGiven = 5
                         },
                         new
                         {
-                            PriorityID = 4,
-                            CreatedBy = 1,
+                            ProjectAllocationID = 4,
+                            AssignedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedBy = 0,
                             CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            PriorityCssClass = "tone-danger",
-                            PriorityName = "Critical"
+                            FacultyID = 5,
+                            OverAllGrade = "A",
+                            ProgressPercentage = 100.00m,
+                            ProjectEndDate = new DateTime(2026, 4, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ProjectID = 4,
+                            ProjectStartDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            StudentID = 9,
+                            TotalCompletedTasks = 5,
+                            TotalTasksGiven = 5
+                        },
+                        new
+                        {
+                            ProjectAllocationID = 5,
+                            AssignedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FacultyID = 2,
+                            OverAllGrade = "B",
+                            ProgressPercentage = 60.00m,
+                            ProjectEndDate = new DateTime(2026, 4, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ProjectID = 5,
+                            ProjectStartDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            StudentID = 10,
+                            TotalCompletedTasks = 3,
+                            TotalTasksGiven = 5
+                        },
+                        new
+                        {
+                            ProjectAllocationID = 6,
+                            AssignedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FacultyID = 3,
+                            OverAllGrade = "F",
+                            ProgressPercentage = 0.00m,
+                            ProjectEndDate = new DateTime(2026, 4, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ProjectID = 6,
+                            ProjectStartDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            StudentID = 11,
+                            TotalCompletedTasks = 0,
+                            TotalTasksGiven = 5
+                        },
+                        new
+                        {
+                            ProjectAllocationID = 7,
+                            AssignedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FacultyID = 4,
+                            OverAllGrade = "C",
+                            ProgressPercentage = 40.00m,
+                            ProjectEndDate = new DateTime(2026, 4, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ProjectID = 7,
+                            ProjectStartDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            StudentID = 12,
+                            TotalCompletedTasks = 2,
+                            TotalTasksGiven = 5
+                        },
+                        new
+                        {
+                            ProjectAllocationID = 8,
+                            AssignedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FacultyID = 5,
+                            OverAllGrade = "A",
+                            ProgressPercentage = 80.00m,
+                            ProjectEndDate = new DateTime(2026, 4, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ProjectID = 8,
+                            ProjectStartDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            StudentID = 13,
+                            TotalCompletedTasks = 4,
+                            TotalTasksGiven = 5
+                        },
+                        new
+                        {
+                            ProjectAllocationID = 9,
+                            AssignedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FacultyID = 2,
+                            OverAllGrade = "B",
+                            ProgressPercentage = 60.00m,
+                            ProjectEndDate = new DateTime(2026, 4, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ProjectID = 9,
+                            ProjectStartDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            StudentID = 14,
+                            TotalCompletedTasks = 3,
+                            TotalTasksGiven = 5
+                        },
+                        new
+                        {
+                            ProjectAllocationID = 10,
+                            AssignedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            FacultyID = 3,
+                            OverAllGrade = "D",
+                            ProgressPercentage = 20.00m,
+                            ProjectEndDate = new DateTime(2026, 4, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ProjectID = 10,
+                            ProjectStartDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            StudentID = 15,
+                            TotalCompletedTasks = 1,
+                            TotalTasksGiven = 5
                         });
                 });
 
-            modelBuilder.Entity("STUDENTPROJECTMANAGEMENTSYSTEM.Models.Project", b =>
+            modelBuilder.Entity("STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Models.ProjectMaster", b =>
                 {
-                    b.Property<int>("ProjectId")
+                    b.Property<int>("ProjectID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ProjectId"));
-
-                    b.Property<DateTime>("AssignedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("CompletedTasks")
-                        .HasColumnType("int");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ProjectID"));
 
                     b.Property<int>("CreatedBy")
                         .HasColumnType("int");
@@ -117,34 +265,10 @@ namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("EndDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("FacultyId")
-                        .HasColumnType("int");
-
-                    b.Property<bool?>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<decimal>("ProgressPercentage")
-                        .HasColumnType("decimal(5,2)");
-
-                    b.Property<int>("ProjectStatus")
-                        .HasColumnType("int");
-
                     b.Property<string>("ProjectTitle")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
-
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("StudentId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TotalTasks")
-                        .HasColumnType("int");
 
                     b.Property<int?>("UpdatedBy")
                         .HasColumnType("int");
@@ -152,24 +276,100 @@ namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Migrations
                     b.Property<DateTime?>("UpdatedOn")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("ProjectId");
+                    b.HasKey("ProjectID");
 
-                    b.HasIndex("FacultyId");
+                    b.ToTable("SPM_ProjectMaster");
 
-                    b.HasIndex("ProjectStatus");
-
-                    b.HasIndex("StudentId");
-
-                    b.ToTable("SPM_Project");
+                    b.HasData(
+                        new
+                        {
+                            ProjectID = 1,
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "A web-based exam management system",
+                            ProjectTitle = "Online Examination System"
+                        },
+                        new
+                        {
+                            ProjectID = 2,
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "System to manage hospital records and appointments",
+                            ProjectTitle = "Hospital Management System"
+                        },
+                        new
+                        {
+                            ProjectID = 3,
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Digital library book tracking and management",
+                            ProjectTitle = "Library Management System"
+                        },
+                        new
+                        {
+                            ProjectID = 4,
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Online shopping portal with cart and payment",
+                            ProjectTitle = "E-Commerce Platform"
+                        },
+                        new
+                        {
+                            ProjectID = 5,
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Mobile app for tracking student attendance",
+                            ProjectTitle = "Student Attendance Tracker"
+                        },
+                        new
+                        {
+                            ProjectID = 6,
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "POS system for restaurant orders and billing",
+                            ProjectTitle = "Restaurant Billing System"
+                        },
+                        new
+                        {
+                            ProjectID = 7,
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Manage blood donations, donors and requests",
+                            ProjectTitle = "Blood Bank Management System"
+                        },
+                        new
+                        {
+                            ProjectID = 8,
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Platform connecting recruiters and job seekers",
+                            ProjectTitle = "Job Portal"
+                        },
+                        new
+                        {
+                            ProjectID = 9,
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Stock tracking and inventory control for business",
+                            ProjectTitle = "Inventory Management System"
+                        },
+                        new
+                        {
+                            ProjectID = 10,
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Analytics dashboard for social media accounts",
+                            ProjectTitle = "Social Media Dashboard"
+                        });
                 });
 
-            modelBuilder.Entity("STUDENTPROJECTMANAGEMENTSYSTEM.Models.Role", b =>
+            modelBuilder.Entity("STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Models.Role", b =>
                 {
-                    b.Property<int>("RoleId")
+                    b.Property<int>("RoleID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RoleId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RoleID"));
 
                     b.Property<int>("CreatedBy")
                         .HasColumnType("int");
@@ -192,18 +392,55 @@ namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Migrations
                     b.Property<DateTime?>("UpdatedOn")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("RoleId");
+                    b.HasKey("RoleID");
+
+                    b.HasIndex("RoleName")
+                        .IsUnique();
 
                     b.ToTable("SPM_Role");
+
+                    b.HasData(
+                        new
+                        {
+                            RoleID = 1,
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Full system management access",
+                            RoleName = "Admin"
+                        },
+                        new
+                        {
+                            RoleID = 2,
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Supervises and evaluates student projects",
+                            RoleName = "Faculty"
+                        },
+                        new
+                        {
+                            RoleID = 3,
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Works on assigned projects and tasks",
+                            RoleName = "Student"
+                        },
+                        new
+                        {
+                            RoleID = 4,
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Read-only limited access",
+                            RoleName = "Guest"
+                        });
                 });
 
-            modelBuilder.Entity("STUDENTPROJECTMANAGEMENTSYSTEM.Models.Status", b =>
+            modelBuilder.Entity("STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Models.TaskPriorityMaster", b =>
                 {
-                    b.Property<int>("StatusID")
+                    b.Property<int>("TaskPriorityID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("StatusID"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TaskPriorityID"));
 
                     b.Property<int>("CreatedBy")
                         .HasColumnType("int");
@@ -211,12 +448,12 @@ namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("StatusCssClass")
+                    b.Property<string>("TaskPriorityName")
                         .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
-                    b.Property<string>("StatusName")
+                    b.Property<string>("TaskPriortyCssClass")
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
@@ -227,72 +464,47 @@ namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Migrations
                     b.Property<DateTime?>("UpdatedOn")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("StatusID");
+                    b.HasKey("TaskPriorityID");
 
-                    b.HasIndex("StatusName")
+                    b.HasIndex("TaskPriorityName")
                         .IsUnique();
 
-                    b.ToTable("SPM_Status");
+                    b.ToTable("SPM_TaskPriority");
 
                     b.HasData(
                         new
                         {
-                            StatusID = 1,
-                            CreatedBy = 1,
+                            TaskPriorityID = 1,
+                            CreatedBy = 0,
                             CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            StatusCssClass = "tone-neutral",
-                            StatusName = "Not Started"
+                            TaskPriorityName = "Low",
+                            TaskPriortyCssClass = "tone-neutral"
                         },
                         new
                         {
-                            StatusID = 2,
-                            CreatedBy = 1,
+                            TaskPriorityID = 2,
+                            CreatedBy = 0,
                             CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            StatusCssClass = "tone-warning",
-                            StatusName = "Pending"
+                            TaskPriorityName = "Moderate",
+                            TaskPriortyCssClass = "tone-warning"
                         },
                         new
                         {
-                            StatusID = 3,
-                            CreatedBy = 1,
+                            TaskPriorityID = 3,
+                            CreatedBy = 0,
                             CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            StatusCssClass = "tone-info",
-                            StatusName = "In Progress"
-                        },
-                        new
-                        {
-                            StatusID = 4,
-                            CreatedBy = 1,
-                            CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            StatusCssClass = "tone-success",
-                            StatusName = "Completed"
-                        },
-                        new
-                        {
-                            StatusID = 5,
-                            CreatedBy = 1,
-                            CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            StatusCssClass = "tone-danger",
-                            StatusName = "Rejected"
+                            TaskPriorityName = "Critical",
+                            TaskPriortyCssClass = "tone-danger"
                         });
                 });
 
-            modelBuilder.Entity("STUDENTPROJECTMANAGEMENTSYSTEM.Models.Tasks", b =>
+            modelBuilder.Entity("STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Models.TaskStatusMaster", b =>
                 {
-                    b.Property<int>("TaskId")
+                    b.Property<int>("TaskStatusID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TaskId"));
-
-                    b.Property<int>("AllocationID")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("AssignedScore")
-                        .HasColumnType("decimal(5,2)");
-
-                    b.Property<DateTime?>("CompletedDate")
-                        .HasColumnType("datetime2");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TaskStatusID"));
 
                     b.Property<int>("CreatedBy")
                         .HasColumnType("int");
@@ -300,7 +512,119 @@ namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("DueDate")
+                    b.Property<string>("TaskStatusCssClass")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("TaskStatusName")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<int?>("UpdatedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("TaskStatusID");
+
+                    b.HasIndex("TaskStatusName")
+                        .IsUnique();
+
+                    b.ToTable("SPM_TaskStatus");
+
+                    b.HasData(
+                        new
+                        {
+                            TaskStatusID = 1,
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            TaskStatusCssClass = "tone-warning",
+                            TaskStatusName = "Pending"
+                        },
+                        new
+                        {
+                            TaskStatusID = 2,
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            TaskStatusCssClass = "tone-info",
+                            TaskStatusName = "Ongoing"
+                        },
+                        new
+                        {
+                            TaskStatusID = 3,
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            TaskStatusCssClass = "tone-success",
+                            TaskStatusName = "Completed"
+                        },
+                        new
+                        {
+                            TaskStatusID = 4,
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            TaskStatusCssClass = "tone-danger",
+                            TaskStatusName = "Cancelled"
+                        },
+                        new
+                        {
+                            TaskStatusID = 101,
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            TaskStatusCssClass = "tone-neutral",
+                            TaskStatusName = "Not Started"
+                        },
+                        new
+                        {
+                            TaskStatusID = 102,
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            TaskStatusCssClass = "tone-primary",
+                            TaskStatusName = "Under Review"
+                        },
+                        new
+                        {
+                            TaskStatusID = 103,
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            TaskStatusCssClass = "tone-neutral",
+                            TaskStatusName = "On Hold"
+                        },
+                        new
+                        {
+                            TaskStatusID = 104,
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            TaskStatusCssClass = "tone-success",
+                            TaskStatusName = "Assigned"
+                        },
+                        new
+                        {
+                            TaskStatusID = 105,
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            TaskStatusCssClass = "tone-warning",
+                            TaskStatusName = "Unassigned"
+                        });
+                });
+
+            modelBuilder.Entity("STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Models.Tasks", b =>
+                {
+                    b.Property<int>("TaskID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TaskID"));
+
+                    b.Property<decimal>("AssignedScore")
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
 
                     b.Property<decimal?>("EarnedScore")
@@ -310,26 +634,38 @@ namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<bool?>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<int>("PriorityID")
-                        .HasColumnType("int");
+                    b.Property<DateTime?>("NextFollowUpDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<decimal>("ProgressPercentage")
                         .HasColumnType("decimal(5,2)");
 
-                    b.Property<DateTime?>("StartDate")
-                        .HasColumnType("datetime2");
+                    b.Property<int>("ProjectAllocationID")
+                        .HasColumnType("int");
 
                     b.Property<string>("StudentRemarks")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
+                    b.Property<DateTime>("TaskAssignedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("TaskCompletedDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("TaskDescription")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("TaskStatus")
+                    b.Property<DateTime?>("TaskDueDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("TaskPriorityID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("TaskStartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("TaskStatusID")
                         .HasColumnType("int");
 
                     b.Property<string>("TaskTitle")
@@ -343,22 +679,229 @@ namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Migrations
                     b.Property<DateTime?>("UpdatedOn")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("TaskId");
+                    b.HasKey("TaskID");
 
-                    b.HasIndex("PriorityID");
+                    b.HasIndex("ProjectAllocationID");
 
-                    b.HasIndex("TaskStatus");
+                    b.HasIndex("TaskPriorityID");
+
+                    b.HasIndex("TaskStatusID");
 
                     b.ToTable("SPM_Task");
+
+                    b.HasData(
+                        new
+                        {
+                            TaskID = 1,
+                            AssignedScore = 10.00m,
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            EarnedScore = 8.00m,
+                            FacultyRemarks = "Good initial work",
+                            NextFollowUpDate = new DateTime(2026, 1, 13, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ProgressPercentage = 80.00m,
+                            ProjectAllocationID = 1,
+                            StudentRemarks = "Understood specs",
+                            TaskAssignedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            TaskCompletedDate = new DateTime(2026, 1, 11, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            TaskDescription = "Complete requirements documentation",
+                            TaskDueDate = new DateTime(2026, 1, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            TaskPriorityID = 2,
+                            TaskStartDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            TaskStatusID = 3,
+                            TaskTitle = "Requirement Gathering"
+                        },
+                        new
+                        {
+                            TaskID = 2,
+                            AssignedScore = 10.00m,
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            EarnedScore = 9.00m,
+                            FacultyRemarks = "Well structured schema",
+                            NextFollowUpDate = new DateTime(2026, 1, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ProgressPercentage = 90.00m,
+                            ProjectAllocationID = 2,
+                            StudentRemarks = "Schema finalized",
+                            TaskAssignedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            TaskCompletedDate = new DateTime(2026, 1, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            TaskDescription = "Create ERD and schema script",
+                            TaskDueDate = new DateTime(2026, 1, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            TaskPriorityID = 3,
+                            TaskStartDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            TaskStatusID = 3,
+                            TaskTitle = "Database Design"
+                        },
+                        new
+                        {
+                            TaskID = 3,
+                            AssignedScore = 10.00m,
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            EarnedScore = 5.00m,
+                            FacultyRemarks = "Needs cleaner layout",
+                            NextFollowUpDate = new DateTime(2026, 1, 11, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ProgressPercentage = 50.00m,
+                            ProjectAllocationID = 3,
+                            StudentRemarks = "Working on dashboard screen",
+                            TaskAssignedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            TaskDescription = "Design Figma mockups for core pages",
+                            TaskDueDate = new DateTime(2026, 1, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            TaskPriorityID = 1,
+                            TaskStartDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            TaskStatusID = 2,
+                            TaskTitle = "UI Wireframing"
+                        },
+                        new
+                        {
+                            TaskID = 4,
+                            AssignedScore = 10.00m,
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            EarnedScore = 10.00m,
+                            FacultyRemarks = "Excellent work!",
+                            NextFollowUpDate = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ProgressPercentage = 100.00m,
+                            ProjectAllocationID = 4,
+                            StudentRemarks = "All endpoints tested",
+                            TaskAssignedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            TaskCompletedDate = new DateTime(2026, 1, 19, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            TaskDescription = "Build CRUD REST APIs with EF Core",
+                            TaskDueDate = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            TaskPriorityID = 3,
+                            TaskStartDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            TaskStatusID = 3,
+                            TaskTitle = "Backend API Development"
+                        },
+                        new
+                        {
+                            TaskID = 5,
+                            AssignedScore = 10.00m,
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            EarnedScore = 6.00m,
+                            FacultyRemarks = "Focus on error handling",
+                            NextFollowUpDate = new DateTime(2026, 1, 23, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ProgressPercentage = 60.00m,
+                            ProjectAllocationID = 5,
+                            StudentRemarks = "Integrating POST endpoints",
+                            TaskAssignedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            TaskDescription = "Connect Razor views with backend API",
+                            TaskDueDate = new DateTime(2026, 1, 26, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            TaskPriorityID = 2,
+                            TaskStartDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            TaskStatusID = 2,
+                            TaskTitle = "Frontend Integration"
+                        },
+                        new
+                        {
+                            TaskID = 6,
+                            AssignedScore = 10.00m,
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            EarnedScore = 0.00m,
+                            FacultyRemarks = "Please start testing soon",
+                            NextFollowUpDate = new DateTime(2026, 1, 26, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ProgressPercentage = 0.00m,
+                            ProjectAllocationID = 6,
+                            StudentRemarks = "Not started yet",
+                            TaskAssignedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            TaskDescription = "Write xUnit tests for controller layer",
+                            TaskDueDate = new DateTime(2026, 1, 31, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            TaskPriorityID = 1,
+                            TaskStatusID = 1,
+                            TaskTitle = "Unit Testing"
+                        },
+                        new
+                        {
+                            TaskID = 7,
+                            AssignedScore = 10.00m,
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            EarnedScore = 4.00m,
+                            FacultyRemarks = "Check edge cases",
+                            NextFollowUpDate = new DateTime(2026, 1, 29, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ProgressPercentage = 40.00m,
+                            ProjectAllocationID = 7,
+                            StudentRemarks = "Found 2 minor issues",
+                            TaskAssignedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            TaskDescription = "Test flow between client and server",
+                            TaskDueDate = new DateTime(2026, 1, 31, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            TaskPriorityID = 2,
+                            TaskStartDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            TaskStatusID = 2,
+                            TaskTitle = "Integration Testing"
+                        },
+                        new
+                        {
+                            TaskID = 8,
+                            AssignedScore = 10.00m,
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            EarnedScore = 9.00m,
+                            FacultyRemarks = "Smooth deployment",
+                            NextFollowUpDate = new DateTime(2026, 2, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ProgressPercentage = 90.00m,
+                            ProjectAllocationID = 8,
+                            StudentRemarks = "App live on staging environment",
+                            TaskAssignedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            TaskCompletedDate = new DateTime(2026, 2, 2, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            TaskDescription = "Configure IIS and SQL Server hosting",
+                            TaskDueDate = new DateTime(2026, 2, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            TaskPriorityID = 3,
+                            TaskStartDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            TaskStatusID = 3,
+                            TaskTitle = "Deployment Setup"
+                        },
+                        new
+                        {
+                            TaskID = 9,
+                            AssignedScore = 10.00m,
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            EarnedScore = 7.00m,
+                            FacultyRemarks = "Add architectural diagrams",
+                            NextFollowUpDate = new DateTime(2026, 2, 8, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ProgressPercentage = 70.00m,
+                            ProjectAllocationID = 9,
+                            StudentRemarks = "Draft ready",
+                            TaskAssignedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            TaskDescription = "Write user manual and technical guide",
+                            TaskDueDate = new DateTime(2026, 2, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            TaskPriorityID = 1,
+                            TaskStartDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            TaskStatusID = 2,
+                            TaskTitle = "Documentation"
+                        },
+                        new
+                        {
+                            TaskID = 10,
+                            AssignedScore = 10.00m,
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            EarnedScore = 2.00m,
+                            FacultyRemarks = "Practice timing",
+                            NextFollowUpDate = new DateTime(2026, 2, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ProgressPercentage = 20.00m,
+                            ProjectAllocationID = 10,
+                            StudentRemarks = "Outline created",
+                            TaskAssignedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            TaskDescription = "Prepare slides and demo video",
+                            TaskDueDate = new DateTime(2026, 2, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            TaskPriorityID = 2,
+                            TaskStartDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            TaskStatusID = 2,
+                            TaskTitle = "Final Presentation Preparation"
+                        });
                 });
 
-            modelBuilder.Entity("STUDENTPROJECTMANAGEMENTSYSTEM.Models.User", b =>
+            modelBuilder.Entity("STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Models.User", b =>
                 {
-                    b.Property<int>("UserId")
+                    b.Property<int>("UserID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserID"));
 
                     b.Property<int>("CreatedBy")
                         .HasColumnType("int");
@@ -402,21 +945,257 @@ namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Migrations
                     b.Property<DateTime?>("UpdatedOn")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("UserId");
+                    b.Property<string>("UserCode")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("UserTypeID")
+                        .HasColumnType("int");
+
+                    b.HasKey("UserID");
 
                     b.HasIndex("Email")
                         .IsUnique();
 
+                    b.HasIndex("UserTypeID");
+
                     b.ToTable("SPM_User");
+
+                    b.HasData(
+                        new
+                        {
+                            UserID = 1,
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "admin@spms.com",
+                            FullName = "Admin User",
+                            IsActive = true,
+                            IsDeleted = false,
+                            MobileNumber = "9000000000",
+                            Password = "admin123",
+                            ProfilePicturePath = "/images/default-user.png",
+                            UserCode = "ADM001",
+                            UserTypeID = 1
+                        },
+                        new
+                        {
+                            UserID = 2,
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "ravi.mehta@spms.com",
+                            FullName = "Ravi Mehta",
+                            IsActive = true,
+                            IsDeleted = false,
+                            MobileNumber = "9100000001",
+                            Password = "faculty123",
+                            ProfilePicturePath = "/images/default-user.png",
+                            UserCode = "F001",
+                            UserTypeID = 2
+                        },
+                        new
+                        {
+                            UserID = 3,
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "priya.shah@spms.com",
+                            FullName = "Priya Shah",
+                            IsActive = true,
+                            IsDeleted = false,
+                            MobileNumber = "9100000002",
+                            Password = "faculty123",
+                            ProfilePicturePath = "/images/default-user.png",
+                            UserCode = "F002",
+                            UserTypeID = 2
+                        },
+                        new
+                        {
+                            UserID = 4,
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dinesh.patel@spms.com",
+                            FullName = "Dinesh Patel",
+                            IsActive = true,
+                            IsDeleted = false,
+                            MobileNumber = "9100000003",
+                            Password = "faculty123",
+                            ProfilePicturePath = "/images/default-user.png",
+                            UserCode = "F003",
+                            UserTypeID = 2
+                        },
+                        new
+                        {
+                            UserID = 5,
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "sonal.joshi@spms.com",
+                            FullName = "Sonal Joshi",
+                            IsActive = true,
+                            IsDeleted = false,
+                            MobileNumber = "9100000004",
+                            Password = "faculty123",
+                            ProfilePicturePath = "/images/default-user.png",
+                            UserCode = "F004",
+                            UserTypeID = 2
+                        },
+                        new
+                        {
+                            UserID = 6,
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "het.patel@spms.com",
+                            FullName = "Het Patel",
+                            IsActive = true,
+                            IsDeleted = false,
+                            MobileNumber = "9200000001",
+                            Password = "student123",
+                            ProfilePicturePath = "/images/default-user.png",
+                            UserCode = "25010101622",
+                            UserTypeID = 3
+                        },
+                        new
+                        {
+                            UserID = 7,
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "vasu.desai@spms.com",
+                            FullName = "Vasu Desai",
+                            IsActive = true,
+                            IsDeleted = false,
+                            MobileNumber = "9200000002",
+                            Password = "student123",
+                            ProfilePicturePath = "/images/default-user.png",
+                            UserCode = "25010101623",
+                            UserTypeID = 3
+                        },
+                        new
+                        {
+                            UserID = 8,
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "kartavya.hindocha@spms.com",
+                            FullName = "Kartavya Hindocha",
+                            IsActive = true,
+                            IsDeleted = false,
+                            MobileNumber = "9200000003",
+                            Password = "student123",
+                            ProfilePicturePath = "/images/default-user.png",
+                            UserCode = "25010101682",
+                            UserTypeID = 3
+                        },
+                        new
+                        {
+                            UserID = 9,
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "dev.shah@spms.com",
+                            FullName = "Dev Shah",
+                            IsActive = true,
+                            IsDeleted = false,
+                            MobileNumber = "9200000004",
+                            Password = "student123",
+                            ProfilePicturePath = "/images/default-user.png",
+                            UserCode = "25010101625",
+                            UserTypeID = 3
+                        },
+                        new
+                        {
+                            UserID = 10,
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "neel.trivedi@spms.com",
+                            FullName = "Neel Trivedi",
+                            IsActive = true,
+                            IsDeleted = false,
+                            MobileNumber = "9200000005",
+                            Password = "student123",
+                            ProfilePicturePath = "/images/default-user.png",
+                            UserCode = "25010101626",
+                            UserTypeID = 3
+                        },
+                        new
+                        {
+                            UserID = 11,
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "jay.chauhan@spms.com",
+                            FullName = "Jay Chauhan",
+                            IsActive = true,
+                            IsDeleted = false,
+                            MobileNumber = "9200000006",
+                            Password = "student123",
+                            ProfilePicturePath = "/images/default-user.png",
+                            UserCode = "25010101627",
+                            UserTypeID = 3
+                        },
+                        new
+                        {
+                            UserID = 12,
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "raj.solanki@spms.com",
+                            FullName = "Raj Solanki",
+                            IsActive = true,
+                            IsDeleted = false,
+                            MobileNumber = "9200000007",
+                            Password = "student123",
+                            ProfilePicturePath = "/images/default-user.png",
+                            UserCode = "25010101628",
+                            UserTypeID = 3
+                        },
+                        new
+                        {
+                            UserID = 13,
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "om.parmar@spms.com",
+                            FullName = "Om Parmar",
+                            IsActive = true,
+                            IsDeleted = false,
+                            MobileNumber = "9200000008",
+                            Password = "student123",
+                            ProfilePicturePath = "/images/default-user.png",
+                            UserCode = "25010101629",
+                            UserTypeID = 3
+                        },
+                        new
+                        {
+                            UserID = 14,
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "krish.rathod@spms.com",
+                            FullName = "Krish Rathod",
+                            IsActive = true,
+                            IsDeleted = false,
+                            MobileNumber = "9200000009",
+                            Password = "student123",
+                            ProfilePicturePath = "/images/default-user.png",
+                            UserCode = "25010101630",
+                            UserTypeID = 3
+                        },
+                        new
+                        {
+                            UserID = 15,
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Email = "manan.jain@spms.com",
+                            FullName = "Manan Jain",
+                            IsActive = true,
+                            IsDeleted = false,
+                            MobileNumber = "9200000010",
+                            Password = "student123",
+                            ProfilePicturePath = "/images/default-user.png",
+                            UserCode = "25010101631",
+                            UserTypeID = 3
+                        });
                 });
 
-            modelBuilder.Entity("STUDENTPROJECTMANAGEMENTSYSTEM.Models.UserRole", b =>
+            modelBuilder.Entity("STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Models.UserRole", b =>
                 {
-                    b.Property<int>("RolePermissionId")
+                    b.Property<int>("RolePermissionID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RolePermissionId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("RolePermissionID"));
 
                     b.Property<int>("CreatedBy")
                         .HasColumnType("int");
@@ -424,7 +1203,7 @@ namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("RoleId")
+                    b.Property<int>("RoleID")
                         .HasColumnType("int");
 
                     b.Property<int?>("UpdatedBy")
@@ -433,81 +1212,324 @@ namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Migrations
                     b.Property<DateTime?>("UpdatedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("UserId")
+                    b.Property<int>("UserID")
                         .HasColumnType("int");
 
-                    b.HasKey("RolePermissionId");
+                    b.HasKey("RolePermissionID");
 
-                    b.HasIndex("RoleId");
+                    b.HasIndex("RoleID");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserID");
 
                     b.ToTable("SPM_UserRole");
+
+                    b.HasData(
+                        new
+                        {
+                            RolePermissionID = 1,
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            RoleID = 1,
+                            UserID = 1
+                        },
+                        new
+                        {
+                            RolePermissionID = 2,
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            RoleID = 2,
+                            UserID = 2
+                        },
+                        new
+                        {
+                            RolePermissionID = 3,
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            RoleID = 2,
+                            UserID = 3
+                        },
+                        new
+                        {
+                            RolePermissionID = 4,
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            RoleID = 2,
+                            UserID = 4
+                        },
+                        new
+                        {
+                            RolePermissionID = 5,
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            RoleID = 2,
+                            UserID = 5
+                        },
+                        new
+                        {
+                            RolePermissionID = 6,
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            RoleID = 3,
+                            UserID = 6
+                        },
+                        new
+                        {
+                            RolePermissionID = 7,
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            RoleID = 3,
+                            UserID = 7
+                        },
+                        new
+                        {
+                            RolePermissionID = 8,
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            RoleID = 3,
+                            UserID = 8
+                        },
+                        new
+                        {
+                            RolePermissionID = 9,
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            RoleID = 3,
+                            UserID = 9
+                        },
+                        new
+                        {
+                            RolePermissionID = 10,
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            RoleID = 3,
+                            UserID = 10
+                        },
+                        new
+                        {
+                            RolePermissionID = 11,
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            RoleID = 3,
+                            UserID = 11
+                        },
+                        new
+                        {
+                            RolePermissionID = 12,
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            RoleID = 3,
+                            UserID = 12
+                        },
+                        new
+                        {
+                            RolePermissionID = 13,
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            RoleID = 3,
+                            UserID = 13
+                        },
+                        new
+                        {
+                            RolePermissionID = 14,
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            RoleID = 3,
+                            UserID = 14
+                        },
+                        new
+                        {
+                            RolePermissionID = 15,
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            RoleID = 3,
+                            UserID = 15
+                        });
                 });
 
-            modelBuilder.Entity("STUDENTPROJECTMANAGEMENTSYSTEM.Models.Project", b =>
+            modelBuilder.Entity("STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Models.UserType", b =>
                 {
-                    b.HasOne("STUDENTPROJECTMANAGEMENTSYSTEM.Models.User", "Faculty")
-                        .WithMany()
-                        .HasForeignKey("FacultyId")
+                    b.Property<int>("UserTypeID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserTypeID"));
+
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(250)
+                        .HasColumnType("nvarchar(250)");
+
+                    b.Property<int?>("UpdatedBy")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("UpdatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserTypeName")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("UserTypeID");
+
+                    b.HasIndex("UserTypeName")
+                        .IsUnique();
+
+                    b.ToTable("SPM_UserType");
+
+                    b.HasData(
+                        new
+                        {
+                            UserTypeID = 1,
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Full system access",
+                            UserTypeName = "Admin"
+                        },
+                        new
+                        {
+                            UserTypeID = 2,
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Supervises student projects",
+                            UserTypeName = "Faculty"
+                        },
+                        new
+                        {
+                            UserTypeID = 3,
+                            CreatedBy = 0,
+                            CreatedOn = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Description = "Works on assigned projects",
+                            UserTypeName = "Student"
+                        });
+                });
+
+            modelBuilder.Entity("STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Models.ProjectAllocation", b =>
+                {
+                    b.HasOne("STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Models.User", "Faculty")
+                        .WithMany("ProjectAllocationsAsFaculty")
+                        .HasForeignKey("FacultyID")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("STUDENTPROJECTMANAGEMENTSYSTEM.Models.Status", "Status")
-                        .WithMany()
-                        .HasForeignKey("ProjectStatus")
+                    b.HasOne("STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Models.ProjectMaster", "ProjectMaster")
+                        .WithMany("ProjectAllocations")
+                        .HasForeignKey("ProjectID")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("STUDENTPROJECTMANAGEMENTSYSTEM.Models.User", "Student")
-                        .WithMany()
-                        .HasForeignKey("StudentId")
+                    b.HasOne("STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Models.User", "Student")
+                        .WithMany("ProjectAllocationsAsStudent")
+                        .HasForeignKey("StudentID")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Faculty");
 
-                    b.Navigation("Status");
+                    b.Navigation("ProjectMaster");
 
                     b.Navigation("Student");
                 });
 
-            modelBuilder.Entity("STUDENTPROJECTMANAGEMENTSYSTEM.Models.Tasks", b =>
+            modelBuilder.Entity("STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Models.Tasks", b =>
                 {
-                    b.HasOne("STUDENTPROJECTMANAGEMENTSYSTEM.Models.Priority", "Priority")
-                        .WithMany()
-                        .HasForeignKey("PriorityID")
+                    b.HasOne("STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Models.ProjectAllocation", "ProjectAllocation")
+                        .WithMany("Tasks")
+                        .HasForeignKey("ProjectAllocationID")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("STUDENTPROJECTMANAGEMENTSYSTEM.Models.Status", "Status")
-                        .WithMany()
-                        .HasForeignKey("TaskStatus")
+                    b.HasOne("STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Models.TaskPriorityMaster", "TaskPriority")
+                        .WithMany("Tasks")
+                        .HasForeignKey("TaskPriorityID")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.Navigation("Priority");
+                    b.HasOne("STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Models.TaskStatusMaster", "TaskStatus")
+                        .WithMany("Tasks")
+                        .HasForeignKey("TaskStatusID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
-                    b.Navigation("Status");
+                    b.Navigation("ProjectAllocation");
+
+                    b.Navigation("TaskPriority");
+
+                    b.Navigation("TaskStatus");
                 });
 
-            modelBuilder.Entity("STUDENTPROJECTMANAGEMENTSYSTEM.Models.UserRole", b =>
+            modelBuilder.Entity("STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Models.User", b =>
                 {
-                    b.HasOne("STUDENTPROJECTMANAGEMENTSYSTEM.Models.Role", "Role")
-                        .WithMany()
-                        .HasForeignKey("RoleId")
+                    b.HasOne("STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Models.UserType", "UserType")
+                        .WithMany("Users")
+                        .HasForeignKey("UserTypeID")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("STUDENTPROJECTMANAGEMENTSYSTEM.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
+                    b.Navigation("UserType");
+                });
+
+            modelBuilder.Entity("STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Models.UserRole", b =>
+                {
+                    b.HasOne("STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Models.Role", "Role")
+                        .WithMany("UserRoles")
+                        .HasForeignKey("RoleID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Models.User", "User")
+                        .WithMany("UserRoles")
+                        .HasForeignKey("UserID")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Role");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Models.ProjectAllocation", b =>
+                {
+                    b.Navigation("Tasks");
+                });
+
+            modelBuilder.Entity("STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Models.ProjectMaster", b =>
+                {
+                    b.Navigation("ProjectAllocations");
+                });
+
+            modelBuilder.Entity("STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Models.Role", b =>
+                {
+                    b.Navigation("UserRoles");
+                });
+
+            modelBuilder.Entity("STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Models.TaskPriorityMaster", b =>
+                {
+                    b.Navigation("Tasks");
+                });
+
+            modelBuilder.Entity("STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Models.TaskStatusMaster", b =>
+                {
+                    b.Navigation("Tasks");
+                });
+
+            modelBuilder.Entity("STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Models.User", b =>
+                {
+                    b.Navigation("ProjectAllocationsAsFaculty");
+
+                    b.Navigation("ProjectAllocationsAsStudent");
+
+                    b.Navigation("UserRoles");
+                });
+
+            modelBuilder.Entity("STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Models.UserType", b =>
+                {
+                    b.Navigation("Users");
                 });
 #pragma warning restore 612, 618
         }

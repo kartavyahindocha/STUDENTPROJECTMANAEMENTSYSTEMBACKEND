@@ -1,42 +1,56 @@
-﻿using STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Models;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace STUDENTPROJECTMANAGEMENTSYSTEM.Models
+namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Models
 {
     [Table("SPM_User")]
     public class User : BaseModel
     {
         [Key]
-        public int UserId { get; set; }
+        public int UserID { get; set; }
 
         [Required]
         [StringLength(150)]
-        public string FullName { get; set; }
+        public string FullName { get; set; } = string.Empty;
 
-        // PDF marks Email as "Not Null, Unique". [Required] enforces Not Null;
-        // uniqueness isn't expressible with a plain data annotation — enforce it
-        // via a unique index/constraint whenever a database layer is added.
+        [StringLength(100)]
+        public string? UserCode { get; set; }
+
         [Required]
         [StringLength(150)]
         [EmailAddress]
-        public string Email { get; set; }
+        public string Email { get; set; } = string.Empty;
 
         [Required]
-        public string Password { get; set; }
+        public string Password { get; set; } = string.Empty;
 
         [Required]
         [StringLength(15)]
         [Phone]
-        public string MobileNumber { get; set; }
+        public string MobileNumber { get; set; } = string.Empty;
 
         [Required]
         [StringLength(500)]
-        public string ProfilePicturePath { get; set; }
+        public string ProfilePicturePath { get; set; } = "/images/default-user.png";
 
         [Required]
-        public bool IsActive { get; set; }
+        public bool IsActive { get; set; } = true;
 
-        public bool? IsDeleted { get; set; }
+        public bool? IsDeleted { get; set; } = false;
+
+        [Required]
+        public int UserTypeID { get; set; }
+
+        [ForeignKey("UserTypeID")]
+        public UserType? UserType { get; set; }
+
+        [NotMapped]
+        public string? Department { get; set; } = "Account";
+
+        public ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
+        public ICollection<ProjectAllocation> ProjectAllocationsAsStudent { get; set; } = new List<ProjectAllocation>();
+        public ICollection<ProjectAllocation> ProjectAllocationsAsFaculty { get; set; } = new List<ProjectAllocation>();
     }
+
 }

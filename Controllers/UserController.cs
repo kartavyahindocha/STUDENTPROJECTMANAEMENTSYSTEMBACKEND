@@ -1,28 +1,323 @@
-﻿using Microsoft.AspNetCore.Http;
+using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Data;
+using STUDENTPROJECTMANAEMENTSYSTEMBACKEND.DTOs.User;
+using STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Models;
+using STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Services;
 
 namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class UserController : ControllerBase
     {
         private readonly AppDbContext context;
+        private readonly IValidator<UserCreateEditDto> validator;
+        private readonly TokenService tokenService;
+
         #region DI
-        public UserController(AppDbContext context)
+        public UserController(AppDbContext context, IValidator<UserCreateEditDto> validator, TokenService tokenService)
         {
             this.context = context;
+            this.validator = validator;
+            this.tokenService = tokenService;
         }
         #endregion
 
-        #region GetAllUser
-        [HttpGet("/user/list")]
-        public async Task<IActionResult>GetAllUser()
+        // Helper: map User entity → UserGetDto (no password, includes UserTypeName)
+        private static UserGetDto ToDto(User u) => new UserGetDto
         {
-            var students = await context.Users.ToListAsync();
-            return Ok(students);
+            UserID             = u.UserID,
+            FullName           = u.FullName,
+            UserCode           = u.UserCode,
+            Email              = u.Email,
+            MobileNumber       = u.MobileNumber,
+            ProfilePicturePath = u.ProfilePicturePath,
+            IsActive           = u.IsActive,
+            IsDeleted          = u.IsDeleted,
+            UserTypeID         = u.UserTypeID,
+            UserTypeName       = u.UserType?.UserTypeName
+        };
+
+        #region GetAllUser
+        [Authorize(Roles = "Admin,Faculty")]
+        [HttpGet("/user/list")]
+        public async Task<IActionResult> GetAllUser()
+        {
+            var users = await context.Users
+                .Include(u => u.UserType)
+                .AsNoTracking()
+                .ToListAsync();
+
+            var dtoList = users.Select(ToDto).ToList();
+
+            var response = ApiResponse.FromResponse(dtoList, "User list fetched successfully", "No users found");
+            return StatusCode(response.StatusCode, response);
+        }
+        #endregion
+
+        #region GetFacultyList
+        [Authorize(Roles = "Admin,Faculty,Student")]
+        [HttpGet("/user/facultylist")]
+        [HttpGet("/faculty/list")]
+        public async Task<IActionResult> GetFacultyList()
+        {
+            var allUsers = await context.Users
+                .Include(u => u.UserType)
+                .Include(u => u.UserRoles).ThenInclude(ur => ur.Role)
+                .AsNoTracking()
+                .ToListAsync();
+
+            var facultyList = allUsers
+                .Where(u => (u.UserType != null && (u.UserType.UserTypeName.Contains("Faculty", StringComparison.OrdinalIgnoreCase)
+                                                 || u.UserType.UserTypeName.Contains("Teacher", StringComparison.OrdinalIgnoreCase)
+                                                 || u.UserType.UserTypeName.Contains("Professor", StringComparison.OrdinalIgnoreCase)))
+                         || u.UserRoles.Any(ur => ur.Role != null && ur.Role.RoleName.Contains("Faculty", StringComparison.OrdinalIgnoreCase)))
+                .ToList();
+
+            if (!facultyList.Any()) facultyList = allUsers;
+
+            var dtoList = facultyList.Select(ToDto).ToList();
+            var response = ApiResponse.FromResponse(dtoList, "Faculty list fetched successfully", "No faculty found");
+            return StatusCode(response.StatusCode, response);
+        }
+        #endregion
+
+        #region GetStudentList
+        [Authorize(Roles = "Admin,Faculty,Student")]
+        [HttpGet("/user/studentlist")]
+        [HttpGet("/student/list")]
+        public async Task<IActionResult> GetStudentList()
+        {
+            var allUsers = await context.Users
+                .Include(u => u.UserType)
+                .Include(u => u.UserRoles).ThenInclude(ur => ur.Role)
+                .AsNoTracking()
+                .ToListAsync();
+
+            var studentList = allUsers
+                .Where(u => (u.UserType != null && u.UserType.UserTypeName.Contains("Student", StringComparison.OrdinalIgnoreCase))
+                         || u.UserRoles.Any(ur => ur.Role != null && ur.Role.RoleName.Contains("Student", StringComparison.OrdinalIgnoreCase)))
+                .ToList();
+
+            if (!studentList.Any()) studentList = allUsers;
+
+            var dtoList = studentList.Select(ToDto).ToList();
+            var response = ApiResponse.FromResponse(dtoList, "Student list fetched successfully", "No students found");
+            return StatusCode(response.StatusCode, response);
+        }
+        #endregion
+
+        #region CreateUser
+        [Authorize(Roles = "Admin")]
+        [HttpPost("/user/create")]
+        public async Task<IActionResult> CreateUser([FromBody] UserCreateEditDto user)
+        {
+            if (user == null)
+            {
+                var badRequestResponse = ApiResponse.BadRequest("INVALID DATA");
+                return StatusCode(badRequestResponse.StatusCode, badRequestResponse);
+            }
+
+            var validationResult = await validator.ValidateAsync(user);
+            if (!validationResult.IsValid)
+            {
+                var badRequestResponse = ApiResponse.BadRequest("Validation Failed", validationResult.Errors.Select(e => e.ErrorMessage));
+                return StatusCode(badRequestResponse.StatusCode, badRequestResponse);
+            }
+
+            var userToAdd = new User
+            {
+                FullName           = user.FullName,
+                UserCode           = user.UserCode,
+                Email              = user.Email,
+                Password           = user.Password,
+                MobileNumber       = user.MobileNumber,
+                ProfilePicturePath = string.IsNullOrEmpty(user.ProfilePicturePath) ? "/images/default-user.png" : user.ProfilePicturePath,
+                IsActive           = user.IsActive,
+                IsDeleted          = user.IsDeleted,
+                UserTypeID         = user.UserTypeID
+            };
+
+            await context.Users.AddAsync(userToAdd);
+            await context.SaveChangesAsync();
+
+            var response = ApiResponse.Created(userToAdd, "User created successfully");
+            return StatusCode(response.StatusCode, response);
+        }
+        #endregion
+
+        #region GetUserById
+        [HttpGet("/user/getbyid/{id}")]
+        public async Task<IActionResult> GetUserById(int id)
+        {
+            var user = await context.Users
+                .Include(u => u.UserType)
+                .FirstOrDefaultAsync(u => u.UserID == id);
+
+            if (user == null)
+            {
+                var notFound = ApiResponse.NotFound("User Not Found");
+                return StatusCode(notFound.StatusCode, notFound);
+            }
+
+            var dto = ToDto(user);
+            var response = ApiResponse.Success(dto, "User fetched successfully");
+            return StatusCode(response.StatusCode, response);
+        }
+        #endregion
+
+        #region UpdateUser
+        [HttpPut("/user/update/{id}")]
+        public async Task<IActionResult> UpdateUser(int id, [FromBody] UserCreateEditDto user)
+        {
+            if (user == null)
+            {
+                var badRequestResponse = ApiResponse.BadRequest("INVALID DATA");
+                return StatusCode(badRequestResponse.StatusCode, badRequestResponse);
+            }
+
+            var validationResult = await validator.ValidateAsync(user);
+            if (!validationResult.IsValid)
+            {
+                var badRequestResponse = ApiResponse.BadRequest("Validation Failed", validationResult.Errors.Select(e => e.ErrorMessage));
+                return StatusCode(badRequestResponse.StatusCode, badRequestResponse);
+            }
+
+            var existingUser = await context.Users.FindAsync(id);
+            if (existingUser == null)
+            {
+                var notFoundResponse = ApiResponse.NotFound("User Not Found");
+                return StatusCode(notFoundResponse.StatusCode, notFoundResponse);
+            }
+
+            existingUser.FullName           = user.FullName;
+            existingUser.UserCode           = user.UserCode;
+            existingUser.Email              = user.Email;
+            existingUser.Password           = user.Password;
+            existingUser.MobileNumber       = user.MobileNumber;
+            existingUser.ProfilePicturePath = string.IsNullOrEmpty(user.ProfilePicturePath) ? existingUser.ProfilePicturePath : user.ProfilePicturePath;
+            existingUser.IsActive           = user.IsActive;
+            existingUser.IsDeleted          = user.IsDeleted;
+            existingUser.UserTypeID         = user.UserTypeID;
+
+            await context.SaveChangesAsync();
+
+            var response = ApiResponse.Success(existingUser, "User updated successfully");
+            return StatusCode(response.StatusCode, response);
+        }
+        #endregion
+
+        #region DeleteUserByPK
+        [Authorize(Roles = "Admin")]
+        [HttpDelete("/user/delete/{id}")]
+        public async Task<IActionResult> DeleteUserByPK(int id)
+        {
+            var user = await context.Users.FindAsync(id);
+            if (user == null)
+            {
+                var notFoundResponse = ApiResponse.NotFound("User Not Found");
+                return StatusCode(notFoundResponse.StatusCode, notFoundResponse);
+            }
+
+            context.Users.Remove(user);
+            await context.SaveChangesAsync();
+
+            var response = ApiResponse.Success(user, "User deleted successfully");
+            return StatusCode(response.StatusCode, response);
+        }
+        #endregion
+
+        #region Login
+        [AllowAnonymous]
+        [HttpPost("login")]
+        [HttpPost("/user/login")]
+        public async Task<IActionResult> Login([FromBody] UserLoginDto dto)
+        {
+            try
+            {
+                if (dto == null || string.IsNullOrWhiteSpace(dto.Email) || string.IsNullOrWhiteSpace(dto.Password))
+                {
+                    var badRequest = ApiResponse.BadRequest("Email and password are required.");
+                    return StatusCode(badRequest.StatusCode, badRequest);
+                }
+
+                var user = await context.Users
+                    .Include(u => u.UserType)
+                    .Include(u => u.UserRoles).ThenInclude(ur => ur.Role)
+                    .SingleOrDefaultAsync(u => u.Email == dto.Email && u.Password == dto.Password);
+
+                if (user == null)
+                {
+                    var unauthorized = ApiResponse.Unauthorized("Invalid Email or password");
+                    return StatusCode(unauthorized.StatusCode, unauthorized);
+                }
+
+                var token = tokenService.GenerateToken(user);
+                var response = ApiResponse.Success(new
+                {
+                    token = token,
+                    user = ToDto(user)
+                }, "Login successful");
+
+                return StatusCode(response.StatusCode, response);
+            }
+            catch (Exception ex)
+            {
+                var errorResponse = ApiResponse.InternalServerError("Something went wrong: " + ex.Message);
+                return StatusCode(errorResponse.StatusCode, errorResponse);
+            }
+        }
+        #endregion
+
+        #region ProtectedData (Requires Valid Token)
+        [HttpGet("protected")]
+        [HttpGet("/user/protected")]
+        public IActionResult GetProtectedData()
+        {
+            return Ok("This is protected data!");
+        }
+        #endregion
+
+        #region PublicData (AllowAnonymous)
+        [AllowAnonymous]
+        [HttpGet("public")]
+        [HttpGet("/user/public")]
+        [HttpGet("/user/students-by-category")]
+        public IActionResult GetAllStudentsByCategory()
+        {
+            return Ok("This is Public data!");
+        }
+        #endregion
+
+        #region RoleBasedAdminOnly (Authorize Roles = Admin)
+        [Authorize(Roles = "Admin")]
+        [HttpGet("admin-only")]
+        [HttpGet("/user/admin-only")]
+        public async Task<IActionResult> GetAllForAdmin()
+        {
+            var users = await context.Users
+                .Include(u => u.UserType)
+                .AsNoTracking()
+                .ToListAsync();
+
+            var dtoList = users.Select(ToDto).ToList();
+            var response = ApiResponse.Success(dtoList, "Admin user list fetched successfully");
+            return StatusCode(response.StatusCode, response);
+        }
+        #endregion
+
+        #region PolicyBasedAdminPageForAccount (Authorize Policy = AdminPageForAccount)
+        [Authorize(Policy = "AdminPageForAccount")]
+        [HttpGet("admin-account")]
+        [HttpGet("/user/admin-account")]
+        public IActionResult AdminPageForAccount()
+        {
+            return Ok("Visible only to Admins with Account Department");
         }
         #endregion
     }

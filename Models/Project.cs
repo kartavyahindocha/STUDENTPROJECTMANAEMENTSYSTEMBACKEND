@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace STUDENTPROJECTMANAGEMENTSYSTEM.Models
+namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Models
 {
     [Table("SPM_Project")]
     public class Project : BaseModel
@@ -38,20 +38,25 @@ namespace STUDENTPROJECTMANAGEMENTSYSTEM.Models
         public decimal ProgressPercentage { get; set; }
 
         // ---- Foreign Keys ----
+        // [ForeignKey("<IdColumnName>")] is placed on the navigation property
+        // and points at the actual FK id column declared just above it.
 
         [Required]
-        [ForeignKey(nameof(Student))]
         public int StudentId { get; set; }
+
+        [ForeignKey("StudentId")]
         public User? Student { get; set; }
 
         [Required]
-        [ForeignKey(nameof(Faculty))]
         public int FacultyId { get; set; }
+
+        [ForeignKey("FacultyId")]
         public User? Faculty { get; set; }
 
         [Required]
-        [ForeignKey(nameof(Status))]
         public int ProjectStatus { get; set; }
+
+        [ForeignKey("ProjectStatus")]
         public Status? Status { get; set; }
     }
 }

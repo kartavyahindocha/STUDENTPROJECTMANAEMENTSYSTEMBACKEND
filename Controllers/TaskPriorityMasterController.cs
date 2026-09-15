@@ -1,4 +1,5 @@
 using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -8,6 +9,7 @@ using STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Models;
 
 namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Controllers
 {
+    [Authorize(Roles = "Admin,Faculty,Student")]
     [Route("api/[controller]")]
     [ApiController]
     public class TaskPriorityMasterController : ControllerBase
@@ -42,6 +44,7 @@ namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Controllers
         #endregion
 
         #region CreateTaskPriorityMaster
+        [Authorize(Roles = "Admin")]
         [HttpPost("/taskprioritymaster/create")]
         public async Task<IActionResult> CreateTaskPriorityMaster([FromBody] TaskPriorityMasterCreateEditDto taskPriority)
         {
@@ -96,6 +99,7 @@ namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Controllers
         #endregion
 
         #region UpdateTaskPriorityMaster
+        [Authorize(Roles = "Admin")]
         [HttpPut("/taskprioritymaster/update/{id}")]
         public async Task<IActionResult> UpdateTaskPriorityMaster(int id, [FromBody] TaskPriorityMasterCreateEditDto taskPriority)
         {
@@ -130,6 +134,7 @@ namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Controllers
         #endregion
 
         #region DeleteTaskPriorityMasterByPK
+        [Authorize(Roles = "Admin")]
         [HttpDelete("/taskprioritymaster/delete/{id}")]
         public async Task<IActionResult> DeleteTaskPriorityMasterByPK(int id)
         {

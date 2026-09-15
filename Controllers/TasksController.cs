@@ -1,4 +1,5 @@
 using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -8,6 +9,7 @@ using STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Models;
 
 namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Controllers
 {
+    [Authorize(Roles = "Admin,Faculty,Student")]
     [Route("api/[controller]")]
     [ApiController]
     public class TasksController : ControllerBase
@@ -76,6 +78,7 @@ namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Controllers
         #endregion
 
         #region CreateTasks
+        [Authorize(Roles = "Admin,Faculty")]
         [HttpPost("/tasks/create")]
         public async Task<IActionResult> CreateTasks([FromBody] TasksCreateEditDto task)
         {
@@ -172,6 +175,7 @@ namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Controllers
         #endregion
 
         #region UpdateTasks
+        [Authorize(Roles = "Admin,Faculty")]
         [HttpPut("/tasks/update/{id}")]
         public async Task<IActionResult> UpdateTasks(int id, [FromBody] TasksCreateEditDto task)
         {
@@ -219,6 +223,7 @@ namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Controllers
         #endregion
 
         #region StudentProgressUpdate (For Student Task Update Form)
+        [Authorize(Roles = "Student,Faculty,Admin")]
         [HttpPut("/tasks/studentupdate/{id}")]
         public async Task<IActionResult> StudentProgressUpdate(int id, [FromBody] TaskStudentUpdateDto dto)
         {
@@ -268,6 +273,7 @@ namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Controllers
         #endregion
 
         #region DeleteTasksByPK
+        [Authorize(Roles = "Admin,Faculty")]
         [HttpDelete("/tasks/delete/{id}")]
         public async Task<IActionResult> DeleteTasksByPK(int id)
         {

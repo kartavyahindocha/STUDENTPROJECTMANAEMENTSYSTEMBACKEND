@@ -1,25 +1,30 @@
 using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Data;
 using STUDENTPROJECTMANAEMENTSYSTEMBACKEND.DTOs.User;
 using STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Models;
+using STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Services;
 
 namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class UserController : ControllerBase
     {
         private readonly AppDbContext context;
         private readonly IValidator<UserCreateEditDto> validator;
+        private readonly TokenService tokenService;
 
         #region DI
-        public UserController(AppDbContext context, IValidator<UserCreateEditDto> validator)
+        public UserController(AppDbContext context, IValidator<UserCreateEditDto> validator, TokenService tokenService)
         {
             this.context = context;
             this.validator = validator;
+            this.tokenService = tokenService;
         }
         #endregion
 
@@ -39,6 +44,7 @@ namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Controllers
         };
 
         #region GetAllUser
+        [Authorize(Roles = "Admin,Faculty")]
         [HttpGet("/user/list")]
         public async Task<IActionResult> GetAllUser()
         {
@@ -55,6 +61,7 @@ namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Controllers
         #endregion
 
         #region GetFacultyList
+        [Authorize(Roles = "Admin,Faculty,Student")]
         [HttpGet("/user/facultylist")]
         [HttpGet("/faculty/list")]
         public async Task<IActionResult> GetFacultyList()
@@ -81,6 +88,7 @@ namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Controllers
         #endregion
 
         #region GetStudentList
+        [Authorize(Roles = "Admin,Faculty,Student")]
         [HttpGet("/user/studentlist")]
         [HttpGet("/student/list")]
         public async Task<IActionResult> GetStudentList()
@@ -105,6 +113,7 @@ namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Controllers
         #endregion
 
         #region CreateUser
+        [Authorize(Roles = "Admin")]
         [HttpPost("/user/create")]
         public async Task<IActionResult> CreateUser([FromBody] UserCreateEditDto user)
         {
@@ -204,6 +213,7 @@ namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Controllers
         #endregion
 
         #region DeleteUserByPK
+        [Authorize(Roles = "Admin")]
         [HttpDelete("/user/delete/{id}")]
         public async Task<IActionResult> DeleteUserByPK(int id)
         {
@@ -219,6 +229,95 @@ namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Controllers
 
             var response = ApiResponse.Success(user, "User deleted successfully");
             return StatusCode(response.StatusCode, response);
+        }
+        #endregion
+
+        #region Login
+        [AllowAnonymous]
+        [HttpPost("login")]
+        [HttpPost("/user/login")]
+        public async Task<IActionResult> Login([FromBody] UserLoginDto dto)
+        {
+            try
+            {
+                if (dto == null || string.IsNullOrWhiteSpace(dto.Email) || string.IsNullOrWhiteSpace(dto.Password))
+                {
+                    var badRequest = ApiResponse.BadRequest("Email and password are required.");
+                    return StatusCode(badRequest.StatusCode, badRequest);
+                }
+
+                var user = await context.Users
+                    .Include(u => u.UserType)
+                    .Include(u => u.UserRoles).ThenInclude(ur => ur.Role)
+                    .SingleOrDefaultAsync(u => u.Email == dto.Email && u.Password == dto.Password);
+
+                if (user == null)
+                {
+                    var unauthorized = ApiResponse.Unauthorized("Invalid Email or password");
+                    return StatusCode(unauthorized.StatusCode, unauthorized);
+                }
+
+                var token = tokenService.GenerateToken(user);
+                var response = ApiResponse.Success(new
+                {
+                    token = token,
+                    user = ToDto(user)
+                }, "Login successful");
+
+                return StatusCode(response.StatusCode, response);
+            }
+            catch (Exception ex)
+            {
+                var errorResponse = ApiResponse.InternalServerError("Something went wrong: " + ex.Message);
+                return StatusCode(errorResponse.StatusCode, errorResponse);
+            }
+        }
+        #endregion
+
+        #region ProtectedData (Requires Valid Token)
+        [HttpGet("protected")]
+        [HttpGet("/user/protected")]
+        public IActionResult GetProtectedData()
+        {
+            return Ok("This is protected data!");
+        }
+        #endregion
+
+        #region PublicData (AllowAnonymous)
+        [AllowAnonymous]
+        [HttpGet("public")]
+        [HttpGet("/user/public")]
+        [HttpGet("/user/students-by-category")]
+        public IActionResult GetAllStudentsByCategory()
+        {
+            return Ok("This is Public data!");
+        }
+        #endregion
+
+        #region RoleBasedAdminOnly (Authorize Roles = Admin)
+        [Authorize(Roles = "Admin")]
+        [HttpGet("admin-only")]
+        [HttpGet("/user/admin-only")]
+        public async Task<IActionResult> GetAllForAdmin()
+        {
+            var users = await context.Users
+                .Include(u => u.UserType)
+                .AsNoTracking()
+                .ToListAsync();
+
+            var dtoList = users.Select(ToDto).ToList();
+            var response = ApiResponse.Success(dtoList, "Admin user list fetched successfully");
+            return StatusCode(response.StatusCode, response);
+        }
+        #endregion
+
+        #region PolicyBasedAdminPageForAccount (Authorize Policy = AdminPageForAccount)
+        [Authorize(Policy = "AdminPageForAccount")]
+        [HttpGet("admin-account")]
+        [HttpGet("/user/admin-account")]
+        public IActionResult AdminPageForAccount()
+        {
+            return Ok("Visible only to Admins with Account Department");
         }
         #endregion
     }

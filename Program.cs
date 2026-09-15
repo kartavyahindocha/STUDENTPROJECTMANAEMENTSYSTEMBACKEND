@@ -1,7 +1,12 @@
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 using Scalar.AspNetCore;
 using STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Data;
+using STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Services;
 using FluentValidation;
 using STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Validators.RoleValidator;
 
@@ -15,7 +20,23 @@ builder.Services.AddControllers()
     });
 
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+builder.Services.AddOpenApi(options =>
+{
+    options.AddDocumentTransformer((document, context, cancellationToken) =>
+    {
+        document.Components ??= new();
+        document.Components.SecuritySchemes ??= new Dictionary<string, IOpenApiSecurityScheme>();
+        document.Components.SecuritySchemes["Bearer"] = new OpenApiSecurityScheme
+        {
+            Type = SecuritySchemeType.Http,
+            Scheme = "bearer",
+            BearerFormat = "JWT",
+            In = ParameterLocation.Header,
+            Description = "Enter your JWT token here (no need to type 'Bearer' prefix)"
+        };
+        return Task.CompletedTask;
+    });
+});
 
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
@@ -23,12 +44,50 @@ builder.Services.AddDbContext<AppDbContext>(options =>
         builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 builder.Services.AddValidatorsFromAssemblyContaining<RoleCreateEditValidator>();
+
+// Configure JWT Authentication
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        ValidAudience = builder.Configuration["Jwt:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!)
+        ),
+        RoleClaimType = System.Security.Claims.ClaimTypes.Role,
+        NameClaimType = System.Security.Claims.ClaimTypes.Name
+    };
+});
+
+// Configure Policy-Based Authorization
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminPageForAccount", policy =>
+    {
+        policy.RequireRole("Admin")
+              .RequireClaim("Department", "Account");
+    });
+});
+
+// Register TokenService
+builder.Services.AddScoped<TokenService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.MapOpenApi().AllowAnonymous();
 
     // Scalar API Reference
     app.MapScalarApiReference(options =>
@@ -200,8 +259,10 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-app.MapGet("/", () => Results.Redirect("/scalar"));
+app.MapGet("/", () => Results.Redirect("/scalar")).AllowAnonymous();
 
+app.UseHttpsRedirection();
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

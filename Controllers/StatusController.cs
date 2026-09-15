@@ -1,4 +1,5 @@
 using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -8,6 +9,7 @@ using STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Models;
 
 namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Controllers
 {
+    [Authorize(Roles = "Admin,Faculty,Student")]
     [Route("api/[controller]")]
     [ApiController]
     public class StatusController : ControllerBase
@@ -42,6 +44,7 @@ namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Controllers
         #endregion
 
         #region CreateStatus
+        [Authorize(Roles = "Admin")]
         [HttpPost("/status/create")]
         public async Task<IActionResult> CreateStatus([FromBody] TaskStatusMasterCreateEditDto status)
         {
@@ -96,6 +99,7 @@ namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Controllers
         #endregion
 
         #region UpdateStatus
+        [Authorize(Roles = "Admin")]
         [HttpPut("/status/update/{id}")]
         public async Task<IActionResult> UpdateStatus(int id, [FromBody] TaskStatusMasterCreateEditDto status)
         {
@@ -130,6 +134,7 @@ namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Controllers
         #endregion
 
         #region DeleteStatusByPK
+        [Authorize(Roles = "Admin")]
         [HttpDelete("/status/delete/{id}")]
         public async Task<IActionResult> DeleteStatusByPK(int id)
         {

@@ -1,4 +1,5 @@
 using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -8,6 +9,7 @@ using STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Models;
 
 namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Controllers
 {
+    [Authorize(Roles = "Admin,Faculty,Student")]
     [Route("api/[controller]")]
     [ApiController]
     public class ProjectMasterController : ControllerBase
@@ -56,6 +58,7 @@ namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Controllers
         #endregion
 
         #region CreateProjectMaster
+        [Authorize(Roles = "Admin,Faculty")]
         [HttpPost("/projectmaster/create")]
         public async Task<IActionResult> CreateProjectMaster([FromBody] ProjectMasterCreateEditDto project)
         {
@@ -141,6 +144,7 @@ namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Controllers
         #endregion
 
         #region UpdateProjectMaster
+        [Authorize(Roles = "Admin,Faculty")]
         [HttpPut("/projectmaster/update/{id}")]
         public async Task<IActionResult> UpdateProjectMaster(int id, [FromBody] ProjectMasterCreateEditDto project)
         {
@@ -205,6 +209,7 @@ namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Controllers
         #endregion
 
         #region DeleteProjectMasterByPK
+        [Authorize(Roles = "Admin,Faculty")]
         [HttpDelete("/projectmaster/delete/{id}")]
         public async Task<IActionResult> DeleteProjectMasterByPK(int id)
         {

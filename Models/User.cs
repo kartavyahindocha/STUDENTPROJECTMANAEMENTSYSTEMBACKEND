@@ -45,6 +45,9 @@ namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Models
         [ForeignKey("UserTypeID")]
         public UserType? UserType { get; set; }
 
+        [NotMapped]
+        public string? Department { get; set; } = "Account";
+
         public ICollection<UserRole> UserRoles { get; set; } = new List<UserRole>();
         public ICollection<ProjectAllocation> ProjectAllocationsAsStudent { get; set; } = new List<ProjectAllocation>();
         public ICollection<ProjectAllocation> ProjectAllocationsAsFaculty { get; set; } = new List<ProjectAllocation>();

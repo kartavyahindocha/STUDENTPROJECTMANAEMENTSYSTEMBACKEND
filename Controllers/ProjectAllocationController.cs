@@ -1,4 +1,5 @@
 using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -8,6 +9,7 @@ using STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Models;
 
 namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Controllers
 {
+    [Authorize(Roles = "Admin,Faculty,Student")]
     [Route("api/[controller]")]
     [ApiController]
     public class ProjectAllocationController : ControllerBase
@@ -58,6 +60,7 @@ namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Controllers
         #endregion
 
         #region CreateProjectAllocation
+        [Authorize(Roles = "Admin,Faculty")]
         [HttpPost("/projectallocation/create")]
         public async Task<IActionResult> CreateProjectAllocation([FromBody] ProjectAllocationCreateEditDto allocation)
         {
@@ -136,6 +139,7 @@ namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Controllers
         #endregion
 
         #region UpdateProjectAllocation
+        [Authorize(Roles = "Admin,Faculty")]
         [HttpPut("/projectallocation/update/{id}")]
         public async Task<IActionResult> UpdateProjectAllocation(int id, [FromBody] ProjectAllocationCreateEditDto allocation)
         {
@@ -178,6 +182,7 @@ namespace STUDENTPROJECTMANAEMENTSYSTEMBACKEND.Controllers
         #endregion
 
         #region DeleteProjectAllocationByPK
+        [Authorize(Roles = "Admin,Faculty")]
         [HttpDelete("/projectallocation/delete/{id}")]
         public async Task<IActionResult> DeleteProjectAllocationByPK(int id)
         {
